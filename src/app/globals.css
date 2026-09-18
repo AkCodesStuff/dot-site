@@ -1,26 +1,243 @@
 @import "tailwindcss";
 
+/* ============================================================================
+   DESIGN TOKENS — the single source of truth for every colour in the project.
+   ----------------------------------------------------------------------------
+   RULE: never write a colour literal (#hex, rgb(), oklch(), or a stock Tailwind
+   palette class such as `bg-blue-600`) anywhere outside this file.
+   Components must only use token utilities: `bg-primary`, `text-on-primary`,
+   `border-border`, `bg-surface`, `text-on-surface`, and so on.
+
+   Every `--x` background token has a matching `--on-x` foreground token that is
+   guaranteed to be readable on top of it. Pair them: bg-accent + text-on-accent.
+   ========================================================================== */
+
 :root {
+  /* --- Brand ------------------------------------------------------------- */
+  --primary: #0f2e4c;
+  --primary-hover: #17456f;
+  --on-primary: #f8fafc;
+
+  --secondary: #2f6d8c;
+  --secondary-hover: #3a83a6;
+  --on-secondary: #f8fafc;
+
+  --accent: #f59e0b;
+  --accent-hover: #d98706;
+  --on-accent: #231704;
+
+  /* --- Surfaces ---------------------------------------------------------- */
   --background: #ffffff;
-  --foreground: #171717;
+  --on-background: #0f172a;
+
+  --surface: #f5f8fb;
+  --on-surface: #1e293b;
+
+  --surface-raised: #ffffff;
+  --on-surface-raised: #0f172a;
+
+  --muted: #e9eef4;
+  --on-muted: #5b6b80;
+
+  /* --- Lines & focus ----------------------------------------------------- */
+  --border: #dbe3ec;
+  --outline: #2f6d8c;
+
+  /* --- Status ------------------------------------------------------------ */
+  --success: #15803d;
+  --on-success: #f0fdf4;
+
+  --warning: #b45309;
+  --on-warning: #fffbeb;
+
+  --danger: #b91c1c;
+  --on-danger: #fef2f2;
+
+  --info: #1d4ed8;
+  --on-info: #eff6ff;
+
+  /* --- Media overlay ----------------------------------------------------- */
+  /* Scrim laid over the hero video so foreground copy stays readable.
+     Always stays "dark" in both themes because it sits on top of footage. */
+  --overlay: #04121f;
+  --on-overlay: #f8fafc;
 }
 
+/* Explicit opt-in dark theme: <html data-theme="dark"> */
+[data-theme="dark"] {
+  --primary: #4d97d1;
+  --primary-hover: #6aabdd;
+  --on-primary: #05172a;
+
+  --secondary: #5fa8c6;
+  --secondary-hover: #7bbcd6;
+  --on-secondary: #05202b;
+
+  --accent: #fbbf24;
+  --accent-hover: #fcd34d;
+  --on-accent: #231704;
+
+  --background: #0a1622;
+  --on-background: #e6edf5;
+
+  --surface: #0f1f2f;
+  --on-surface: #d7e2ee;
+
+  --surface-raised: #15293c;
+  --on-surface-raised: #e6edf5;
+
+  --muted: #1b3145;
+  --on-muted: #93a5ba;
+
+  --border: #24394e;
+  --outline: #5fa8c6;
+
+  --success: #22c55e;
+  --on-success: #04210f;
+
+  --warning: #f59e0b;
+  --on-warning: #2a1b02;
+
+  --danger: #ef4444;
+  --on-danger: #2a0707;
+
+  --info: #60a5fa;
+  --on-info: #06172e;
+
+  --overlay: #04121f;
+  --on-overlay: #f8fafc;
+}
+
+/* System preference, unless the user explicitly forced light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: #4d97d1;
+    --primary-hover: #6aabdd;
+    --on-primary: #05172a;
+
+    --secondary: #5fa8c6;
+    --secondary-hover: #7bbcd6;
+    --on-secondary: #05202b;
+
+    --accent: #fbbf24;
+    --accent-hover: #fcd34d;
+    --on-accent: #231704;
+
+    --background: #0a1622;
+    --on-background: #e6edf5;
+
+    --surface: #0f1f2f;
+    --on-surface: #d7e2ee;
+
+    --surface-raised: #15293c;
+    --on-surface-raised: #e6edf5;
+
+    --muted: #1b3145;
+    --on-muted: #93a5ba;
+
+    --border: #24394e;
+    --outline: #5fa8c6;
+
+    --success: #22c55e;
+    --on-success: #04210f;
+
+    --warning: #f59e0b;
+    --on-warning: #2a1b02;
+
+    --danger: #ef4444;
+    --on-danger: #2a0707;
+
+    --info: #60a5fa;
+    --on-info: #06172e;
+  }
+}
+
+/* ============================================================================
+   Expose the tokens to Tailwind. `inline` keeps the raw `var(--token)` in the
+   generated CSS, so re-assigning a token above instantly re-themes every
+   utility at runtime — no rebuild, no duplicated dark-mode classes.
+   ========================================================================== */
 @theme inline {
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-on-primary: var(--on-primary);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-on-secondary: var(--on-secondary);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-on-accent: var(--on-accent);
+
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-on-background: var(--on-background);
+
+  --color-surface: var(--surface);
+  --color-on-surface: var(--on-surface);
+
+  --color-surface-raised: var(--surface-raised);
+  --color-on-surface-raised: var(--on-surface-raised);
+
+  --color-muted: var(--muted);
+  --color-on-muted: var(--on-muted);
+
+  --color-border: var(--border);
+  --color-outline: var(--outline);
+
+  --color-success: var(--success);
+  --color-on-success: var(--on-success);
+
+  --color-warning: var(--warning);
+  --color-on-warning: var(--on-warning);
+
+  --color-danger: var(--danger);
+  --color-on-danger: var(--on-danger);
+
+  --color-info: var(--info);
+  --color-on-info: var(--on-info);
+
+  --color-overlay: var(--overlay);
+  --color-on-overlay: var(--on-overlay);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================================================
+   Base layer
+   ========================================================================== */
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Keeps anchored content clear of the sticky navbar. */
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--on-background);
+    font-family: var(--font-sans), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--outline);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--on-accent);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
