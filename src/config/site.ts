@@ -22,20 +22,29 @@ export type NavItem = {
 
 export const siteConfig = {
   /** Legal / full company name. Used in structured data and the footer. */
-  name: "Meridian Logistics",
+  name: "DOT Logistics",
   /** Short name used in the wordmark and the browser title template. */
-  shortName: "Meridian",
+  shortName: "DOT",
   /** One-line positioning statement. Feeds the default meta description. */
   tagline: "Freight forwarding, warehousing and last-mile delivery",
   description:
-    "Meridian Logistics moves freight across road, rail, air and sea with real-time tracking, bonded warehousing and customs clearance handled end to end.",
+    "DOT Logistics moves freight across road, rail, air and sea with real-time tracking, bonded warehousing and customs clearance handled end to end.",
+
+  /**
+   * Brand strapline, split so the second half can carry DOT Yellow exactly as
+   * it does in the logo lockup. Rendered uppercase by the component.
+   */
+  strapline: {
+    lead: "One dot. Many",
+    highlight: "possibilities.",
+  },
 
   /**
    * Canonical origin, no trailing slash. Drives canonical URLs, Open Graph
    * URLs, the sitemap and robots.txt. Override per-environment with
    * NEXT_PUBLIC_SITE_URL (see `.env.example`).
    */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.meridian-logistics.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.dot-logistics.com",
 
   locale: "en_US",
   /** BCP-47 tag written to <html lang>. */
@@ -57,7 +66,7 @@ export const siteConfig = {
    */
   logo: {
     src: null as string | null,
-    alt: "Meridian Logistics",
+    alt: "DOT Logistics",
     width: 160,
     height: 32,
   },
@@ -105,8 +114,8 @@ export const siteConfig = {
   browserThemeColor: "#ffffff",
 
   contact: {
-    email: "hello@meridian-logistics.com",
-    supportEmail: "support@meridian-logistics.com",
+    email: "hello@dot-logistics.com",
+    supportEmail: "support@dot-logistics.com",
     phone: "+1 (555) 014-2200",
     /** E.164, used in `tel:` links and structured data. */
     phoneHref: "+15550142200",
@@ -127,7 +136,7 @@ export const siteConfig = {
   },
 
   /** @handle used for Twitter/X card attribution. */
-  twitterHandle: "@example",
+  twitterHandle: "@dotlogistics",
 
   /**
    * HERO BACKGROUND VIDEO

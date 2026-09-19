@@ -1,4 +1,6 @@
+import { LogoLockup } from "@/components/layout/Logo";
 import { Hero } from "@/components/sections/Hero";
+import { NotifyForm } from "@/components/sections/NotifyForm";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
@@ -9,9 +11,12 @@ import { siteConfig } from "@/config/site";
 import { createMetadata } from "@/lib/seo";
 import { breadcrumbSchema, serviceSchema } from "@/lib/structured-data";
 
+const description =
+  "DOT is upgrading. We're building the next chapter of DOT — a smarter, more connected logistics network for freight forwarding, warehousing and last-mile delivery. Bookings, tracking and support all continue as normal.";
+
 export const metadata = createMetadata({
-  title: "Freight forwarding and supply chain logistics",
-  description: siteConfig.description,
+  title: "A smarter, more connected logistics network",
+  description,
   path: "/",
   keywords: [
     "freight forwarding",
@@ -22,58 +27,60 @@ export const metadata = createMetadata({
   ],
 });
 
-const services = [
+/** Where the rollout is. Update the `state` as each phase lands. */
+const phases = [
+  { label: "Network mapped", state: "Done" as const },
+  { label: "Platform rebuild", state: "In progress" as const },
+  { label: "Customer rollout", state: "Next" as const },
+];
+
+const phaseTone = {
+  Done: "success",
+  "In progress": "warning",
+  Next: "neutral",
+} as const;
+
+const whatsComing = [
   {
-    name: "Ocean & air freight",
+    name: "One connected network",
     description:
-      "FCL, LCL and consolidated air cargo with vetted carrier capacity on every major trade lane.",
+      "Road, rail, air, sea and warehousing on a single operating model, so a shipment never falls between two systems.",
   },
   {
-    name: "Road & rail",
+    name: "Tracking that thinks ahead",
     description:
-      "Full and part truckload across the network, with intermodal rail for long-haul cost efficiency.",
+      "Carrier milestones, terminal dwell and lane history feed an ETA that updates itself, instead of a schedule that quietly goes stale.",
   },
   {
-    name: "Bonded warehousing",
+    name: "One platform, end to end",
     description:
-      "Temperature-controlled and bonded storage, pick-and-pack, and inventory visibility down to the SKU.",
+      "Quote, book, track, clear customs and reconcile in the same place — no more stitching together carrier portals and spreadsheets.",
   },
   {
-    name: "Customs & compliance",
+    name: "Onboarding in days",
     description:
-      "In-house brokerage handling classification, duty optimisation and documentation in 40+ markets.",
-  },
-  {
-    name: "Last-mile delivery",
-    description:
-      "Scheduled and same-day delivery with proof of delivery captured at the door.",
-  },
-  {
-    name: "Control tower",
-    description:
-      "One team, one dashboard, and exception alerts before a delay becomes a missed SLA.",
+      "Sandbox credentials on day one and a documented API, so your systems are talking to ours inside a fortnight.",
   },
 ];
 
-const stats = [
-  { value: "42", label: "Countries served" },
-  { value: "1.8M", label: "Shipments per year" },
-  { value: "98.6%", label: "On-time delivery" },
-  { value: "24/7", label: "Control tower coverage" },
-];
-
-const differentiators = [
+const unaffected = [
   {
-    title: "One platform, end to end",
-    body: "Quote, book, track and reconcile in a single system instead of stitching together carrier portals and spreadsheets.",
+    title: "Track a shipment",
+    body: "Live tracking is running exactly as it does today. Nothing has moved.",
+    href: "/tracking",
+    cta: "Open tracking",
   },
   {
-    title: "Visibility that is actually live",
-    body: "Milestone events stream in from carriers, terminals and drivers, so your ETA reflects reality rather than the original plan.",
+    title: "Talk to the control tower",
+    body: `Staffed 24/7 on ${siteConfig.contact.phone} for anything already in motion.`,
+    href: "/contact",
+    cta: "Contact us",
   },
   {
-    title: "Named operational owners",
-    body: "Every account gets a dedicated coordinator who knows your lanes, your cut-offs and your customers.",
+    title: "See the platform",
+    body: "The technology behind the upgrade, including the API and integrations.",
+    href: "/technology",
+    cta: "Explore technology",
   },
 ];
 
@@ -92,98 +99,96 @@ export default function HomePage() {
       />
 
       <Hero
-        eyebrow="Global freight, handled"
-        title="Move freight with fewer surprises"
-        description={siteConfig.description}
-        primaryCta={{ label: "Request a quote", href: "/contact" }}
-        secondaryCta={{ label: "Track a shipment", href: "/tracking" }}
-      />
-
-      {/* --- Stats ---------------------------------------------------------- */}
-      <Section className="py-12 sm:py-14 lg:py-16">
-        <dl className="grid grid-cols-2 gap-8 lg:grid-cols-4">
-          {stats.map((stat) => (
-            <div key={stat.label}>
-              <dt className="sr-only">{stat.label}</dt>
-              <dd>
-                <span className="block text-4xl font-semibold tracking-tight text-primary">
-                  {stat.value}
-                </span>
-                <span className="mt-1 block text-sm text-on-muted">
-                  {stat.label}
-                </span>
-              </dd>
-            </div>
+        lockup={<LogoLockup />}
+        eyebrow="We're upgrading"
+        title={
+          <>
+            We&rsquo;re building the next chapter of{" "}
+            <span className="whitespace-nowrap">
+              {siteConfig.shortName}
+              <span className="text-accent">.</span>
+            </span>
+          </>
+        }
+        description="A smarter, more connected logistics network — one operating model across road, rail, air and sea, with tracking and customs built into the same platform. Your freight keeps moving while we build it."
+        primaryCta={{ label: "Track a shipment", href: "/tracking" }}
+        secondaryCta={{ label: "Talk to us", href: "/contact" }}
+      >
+        <ul className="flex flex-wrap items-center gap-3">
+          {phases.map((phase) => (
+            <li key={phase.label} className="flex items-center gap-2">
+              <Badge tone={phaseTone[phase.state]}>{phase.state}</Badge>
+              <span className="text-sm font-medium">{phase.label}</span>
+            </li>
           ))}
-        </dl>
-      </Section>
+        </ul>
+      </Hero>
 
-      {/* --- Services ------------------------------------------------------- */}
+      {/* --- What's coming -------------------------------------------------- */}
       <Section tone="surface">
         <SectionHeading
-          eyebrow="What we do"
-          title="A full logistics stack, not a patchwork of vendors"
-          description="Pick the pieces you need today and add the rest as your volumes grow — the contracts, the systems and the reporting stay the same."
+          eyebrow="What's coming"
+          title="Four things the upgrade changes"
+          description="Not a new coat of paint. These are the parts of moving freight that are genuinely different once the rebuild lands."
         />
 
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((service) => (
-            <Card key={service.name} className="hover:border-secondary">
-              <CardTitle>{service.name}</CardTitle>
-              <CardBody>{service.description}</CardBody>
+        <div className="mt-12 grid gap-6 sm:grid-cols-2">
+          {whatsComing.map((item) => (
+            <Card key={item.name} className="hover:border-secondary">
+              <CardTitle>{item.name}</CardTitle>
+              <CardBody>{item.description}</CardBody>
             </Card>
           ))}
         </div>
       </Section>
 
-      {/* --- Why us --------------------------------------------------------- */}
+      {/* --- Business as usual ---------------------------------------------- */}
       <Section>
-        <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
-          <SectionHeading
-            eyebrow="Why shippers switch"
-            title="Built for the days when the plan changes"
-            description="Anyone can move a container when nothing goes wrong. The difference shows up at the port strike, the failed customs entry and the missed collection."
-          />
+        <SectionHeading
+          eyebrow="Meanwhile"
+          title="Everything you use today still works"
+          description="This is an upgrade, not an outage. Bookings, tracking, customs and support are unaffected while the new platform is built alongside them."
+        />
 
-          <ul className="space-y-6">
-            {differentiators.map((item) => (
-              <li
-                key={item.title}
-                className="border-l-2 border-accent pl-5"
+        <div className="mt-12 grid gap-6 lg:grid-cols-3">
+          {unaffected.map((item) => (
+            <div
+              key={item.title}
+              className="flex flex-col border-l-2 border-accent pl-5"
+            >
+              <h3 className="text-lg font-semibold tracking-tight">
+                {item.title}
+              </h3>
+              <p className="mt-2 flex-1 text-sm leading-relaxed text-on-muted">
+                {item.body}
+              </p>
+              <ButtonLink
+                href={item.href}
+                variant="ghost"
+                size="sm"
+                className="mt-4 self-start px-0 hover:bg-transparent hover:text-secondary"
               >
-                <h3 className="text-lg font-semibold tracking-tight">
-                  {item.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-on-muted">
-                  {item.body}
-                </p>
-              </li>
-            ))}
-          </ul>
+                {item.cta} &rarr;
+              </ButtonLink>
+            </div>
+          ))}
         </div>
       </Section>
 
-      {/* --- CTA ------------------------------------------------------------ */}
+      {/* --- Notify ---------------------------------------------------------- */}
       <Section tone="secondary">
         <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
-            <Badge tone="accent">Free lane analysis</Badge>
+            <Badge tone="accent">Launching soon</Badge>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
-              Send us your three worst lanes
+              Be first on the new network
             </h2>
             <p className="mt-4 text-lg leading-relaxed text-on-secondary/80">
-              We will come back within two business days with routing options,
-              indicative rates and where the time is actually being lost.
+              Leave your email and we&rsquo;ll tell you the day it goes live —
+              along with what it means for your lanes.
             </p>
           </div>
-          <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/contact" variant="accent" size="lg">
-              Talk to us
-            </ButtonLink>
-            <ButtonLink href="/technology" variant="onOverlay" size="lg">
-              See the platform
-            </ButtonLink>
-          </div>
+          <NotifyForm />
         </div>
       </Section>
     </>

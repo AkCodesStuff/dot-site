@@ -1,4 +1,4 @@
-# Meridian — logistics landing page template
+# DOT — logistics landing page template
 
 Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · token-driven theming · SEO wired end to end.
 
@@ -124,7 +124,7 @@ Every page does this:
 
 ```tsx
 export const metadata = createMetadata({
-  title: "Careers",                    // "Careers | Meridian" via the template
+  title: "Careers",                    // "Careers | DOT" via the template
   description: "…",
   path: "/careers",                    // drives the canonical URL
   keywords: ["logistics jobs"],

@@ -39,8 +39,14 @@ export function createMetadata({
   const url = absoluteUrl(path, siteConfig.url);
   const image = absoluteUrl(ogImage, siteConfig.url);
 
+  // Next.js does not apply `title.template` to the segment that declares it,
+  // and the root layout and the home page are the same segment — so `/` would
+  // otherwise ship a <title> with no brand name in it at all. Every other page
+  // picks the suffix up from the template as normal.
+  const isHome = new URL(url).pathname === "/";
+
   return {
-    title,
+    title: isHome ? { absolute: `${title} | ${siteConfig.shortName}` } : title,
     description,
     keywords,
     alternates: {

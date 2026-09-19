@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { ScrollVideo } from "@/components/media/ScrollVideo";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
+import Image from "next/image";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
@@ -20,23 +21,31 @@ import { cn } from "@/lib/utils";
  * text. Dropping the video in later is a one-line config change.
  */
 export function Hero({
+  lockup,
   eyebrow,
   title,
   description,
   primaryCta,
   secondaryCta,
+  children,
 }: {
+  /** Optional brand lockup rendered above the eyebrow. */
+  lockup?: ReactNode;
   eyebrow: string;
   title: ReactNode;
   description: string;
   primaryCta: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
+  /** Anything to sit under the buttons — a note, a form, status chips. */
+  children?: ReactNode;
 }) {
   const overVideo = Boolean(siteConfig.hero.videoSrc);
 
   const content = (
     <Container>
       <div className="max-w-3xl py-20 sm:py-28">
+        {lockup ? <div className="mb-10">{lockup}</div> : null}
+
         <p
           className={cn(
             "mb-4 text-sm font-semibold uppercase tracking-[0.2em]",
@@ -70,6 +79,8 @@ export function Hero({
             </ButtonLink>
           ) : null}
         </div>
+
+        {children ? <div className="mt-10">{children}</div> : null}
       </div>
     </Container>
   );
@@ -93,6 +104,18 @@ export function Hero({
       {/* Placeholder backdrop — replaced by the video once it is configured.
           A soft DOT Yellow wash bleeding in from the right, at low opacity so
           it stays a tint of the signature colour rather than a new one. */}
+    
+
+
+      <div className="absolute w-2/3 h-full bottom-0 right-0 flex justify-end items-end overflow-visible">
+      <Image
+        src="https://res.cloudinary.com/js6wkdfq/image/upload/v1789797069/truck-dot.png"
+        alt=""
+        fill
+        className="pointer-events-none  inset-0 object-cover"
+        priority
+      />
+      </div>
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-24 -top-32 hidden h-[36rem] w-[36rem] rounded-full bg-accent/15 blur-3xl lg:block"

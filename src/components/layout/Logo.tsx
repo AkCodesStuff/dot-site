@@ -6,22 +6,22 @@ import { cn } from "@/lib/utils";
 
 /**
  * ============================================================================
- * LOGO SLOT
+ * DOT LOGO
  * ============================================================================
- * Two ways to use this:
+ * The mark is a heavy `D` with the signature DOT Yellow dot seated in its
+ * counter, overlapping the stem — drawn as vector, not an image file, so it
+ * stays crisp and recolours itself from the theme tokens:
  *
- * 1. Image file (recommended for a real brand)
- *    - drop `logo.svg` (or .png) into `public/`
- *    - in `src/config/site.ts` set:  logo: { src: "/logo.svg", ... }
+ *   - the `D` is `currentColor`, so it is black on light headers and white
+ *     over the hero video scrim, with no extra CSS
+ *   - the dot is `fill-accent`, so it always carries DOT Yellow
  *
- * 2. Built-in mark (the default)
- *    - an inline SVG that inherits `currentColor`, so it re-colours itself on
- *      light headers, dark footers and over the hero video with no extra CSS.
- *    - swap the <path> below for your own mark and it keeps working.
+ * Swap in a real file instead by dropping it in `public/` and setting
+ * `logo.src` in `src/config/site.ts`.
  */
 export function Logo({
   className,
-  /** Hide the wordmark and show only the mark (useful in tight footers). */
+  /** Hide the wordmark and show only the mark (useful in tight spaces). */
   markOnly = false,
 }: {
   className?: string;
@@ -32,7 +32,7 @@ export function Logo({
       href="/"
       aria-label={`${siteConfig.name} — home`}
       className={cn(
-        "inline-flex items-center gap-2.5 rounded-md font-semibold tracking-tight",
+        "inline-flex items-center gap-2 rounded-md",
         className,
       )}
     >
@@ -48,43 +48,74 @@ export function Logo({
       ) : (
         <>
           <LogoMark className="h-8 w-8 shrink-0" />
-          {!markOnly ? (
-            <span className="text-lg leading-none">
-              {siteConfig.shortName}
-              <span className="text-accent">.</span>
-            </span>
-          ) : null}
+          {!markOnly ? <Wordmark className="text-xl" /> : null}
         </>
       )}
     </Link>
   );
 }
 
-/** The bare mark. `currentColor` keeps it token-driven — no hard-coded fills. */
+/**
+ * The bare mark. The `D` inherits `currentColor`; the dot is always DOT Yellow.
+ */
 export function LogoMark({ className }: { className?: string }) {
   return (
     <svg
-      viewBox="0 0 32 32"
-      fill="none"
+      viewBox="0 0 40 40"
       aria-hidden="true"
       className={className}
     >
-      <rect
-        x="1.25"
-        y="1.25"
-        width="29.5"
-        height="29.5"
-        rx="8"
-        stroke="currentColor"
-        strokeWidth="2.5"
-      />
+      {/* Heavy D, counter punched out with the even-odd rule. */}
       <path
-        d="M8 21.5 13.2 10.5l4.1 7.6 2.3-3.9L24 21.5"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        fill="currentColor"
+        d="M5 5h15c9.389 0 17 6.716 17 15s-7.611 15-17 15H5V5Zm9 8v14h6c4.418 0 7.5-3.134 7.5-7s-3.082-7-7.5-7h-6Z"
       />
+      {/* The dot, seated in the counter and breaking into the stem. */}
+      <circle cx="18.4" cy="20" r="6.9" className="fill-accent" />
     </svg>
+  );
+}
+
+/** The `DOT` wordmark. Heavy and tight, to sit against the mark. */
+export function Wordmark({ className }: { className?: string }) {
+  return (
+    <span
+      className={cn(
+        "font-extrabold uppercase leading-none tracking-tight",
+        className,
+      )}
+    >
+      {siteConfig.shortName}
+    </span>
+  );
+}
+
+/**
+ * Mark + wordmark + strapline, stacked. The full brand lockup, for places with
+ * room to breathe — the landing hero, a splash screen, an email header.
+ */
+export function LogoLockup({
+  className,
+  strapline = true,
+}: {
+  className?: string;
+  strapline?: boolean;
+}) {
+  return (
+    <div className={cn("inline-flex flex-col items-start gap-3", className)}>
+      <div className="flex items-center gap-3">
+        <LogoMark className="h-14 w-14 shrink-0 sm:h-16 sm:w-16" />
+        <Wordmark className="text-5xl sm:text-6xl" />
+      </div>
+
+      {strapline ? (
+        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.32em] sm:text-xs">
+          {siteConfig.strapline.lead}{" "}
+          <span className="text-accent">{siteConfig.strapline.highlight}</span>
+        </p>
+      ) : null}
+    </div>
   );
 }
