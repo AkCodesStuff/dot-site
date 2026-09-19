@@ -31,14 +31,14 @@ export function Navbar() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md">
+    <header className="fixed top-0 z-50 border-b border-border bg-background/85 backdrop-blur-md translate-x-1/2 right-1/2 rounded-b-2xl">
       <Container>
         <nav
           aria-label="Primary"
           className="flex h-16 items-center justify-between gap-4 lg:h-20"
         >
           {/* --- Logo slot ------------------------------------------------ */}
-          <Logo className="text-primary" />
+          {/* <Logo className="text-primary" /> */}
 
           {/* --- Desktop tabs --------------------------------------------- */}
           <ul className="hidden items-center gap-1 lg:flex">
@@ -69,7 +69,7 @@ export function Navbar() {
           </ul>
 
           {/* --- Desktop CTA ---------------------------------------------- */}
-          <div className="hidden lg:block">
+          {/* <div className="hidden lg:block">
             <ButtonLink
               href={siteConfig.navCta.href}
               variant="accent"
@@ -77,7 +77,7 @@ export function Navbar() {
             >
               {siteConfig.navCta.label}
             </ButtonLink>
-          </div>
+          </div> */}
 
           {/* --- Mobile toggle -------------------------------------------- */}
           <button

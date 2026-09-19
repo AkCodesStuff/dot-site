@@ -43,8 +43,8 @@ export function Hero({
 
   const content = (
     <Container>
-      <div className="max-w-3xl py-20 sm:py-28">
-        {lockup ? <div className="mb-10">{lockup}</div> : null}
+      <div className="max-w-3xl py-20 sm:py-38">
+       
 
         <p
           className={cn(
@@ -55,7 +55,7 @@ export function Hero({
           {eyebrow}
         </p>
         <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
-          {title}
+          We're <span className="text-accent">Building</span> the Next chapter of<span className="text-accent">  DOT</span>
         </h1>
         <p
           className={cn(
@@ -80,7 +80,7 @@ export function Hero({
           ) : null}
         </div>
 
-        {children ? <div className="mt-10">{children}</div> : null}
+
       </div>
     </Container>
   );
@@ -100,25 +100,34 @@ export function Hero({
   }
 
   return (
-    <section className="relative overflow-hidden border-b border-border bg-surface text-on-surface">
+    <section className="relative h-screen overflow-hidden border-b border-border bg-surface text-on-surface">
       {/* Placeholder backdrop — replaced by the video once it is configured.
           A soft DOT Yellow wash bleeding in from the right, at low opacity so
           it stays a tint of the signature colour rather than a new one. */}
     
 
-
-      <div className="absolute w-2/3 h-full bottom-0 right-0 flex justify-end items-end overflow-visible">
+<div className="absolute w-full h-full bottom-0 right-0 flex justify-end items-end overflow-visible">
       <Image
-        src="https://res.cloudinary.com/js6wkdfq/image/upload/v1789797069/truck-dot.png"
+        src="https://res.cloudinary.com/js6wkdfq/image/upload/v1789797950/bg-dot.png"
         alt=""
         fill
         className="pointer-events-none  inset-0 object-cover"
         priority
       />
       </div>
+      <div className="absolute w-1/3 h-full bottom-0 right-20 hover:translate-y-20 pr-10 flex justify-end items-end overflow-visible">
+      <Image
+        src="https://res.cloudinary.com/js6wkdfq/image/upload/e_background_removal/v1789797069/truck-dot-2.png"
+        alt=""
+        height={300}
+        width={400}
+        className="pointer-events-none  inset-0 object-contain "
+        priority
+      />
+      </div>
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -right-24 -top-32 hidden h-[36rem] w-[36rem] rounded-full bg-accent/15 blur-3xl lg:block"
+        className="pointer-events-none absolute -right-24  hidden h-[36rem] w-[36rem] rounded-full bg-accent/15 blur-3xl lg:block"
       />
       <div className="relative">{content}</div>
     </section>
