@@ -112,6 +112,17 @@ export const siteConfig = {
   },
 
   /**
+   * Soft-launch switch. While true, every page except Home ("/") shows a
+   * basic "Coming soon" placeholder (see `ComingSoon.tsx`, structured like
+   * the Hero) instead of its real content — visiting the page's own URL
+   * directly shows the placeholder too, not just the nav link. Each real
+   * page's actual content is untouched in its file, just gated behind this
+   * flag, so flipping it to `false` brings the whole site live at once with
+   * no content to restore or rewrite.
+   */
+  comingSoon: true,
+
+  /**
    * The ONE place a colour literal is allowed outside `globals.css`.
    * `<meta name="theme-color">` paints the mobile browser chrome and is read
    * by the browser before any CSS loads, so it cannot reference a CSS token.
@@ -120,19 +131,22 @@ export const siteConfig = {
   browserThemeColor: "#ffffff",
 
   contact: {
-    email: "hello@dot-logistics.com",
-    supportEmail: "support@dot-logistics.com",
-    phone: "+1 (555) 014-2200",
+    email: "info@thisisdot.in",
+    supportEmail: "support@thisisdot.in",
+    phone: "+91 95609 20069",
     /** E.164, used in `tel:` links and structured data. */
-    phoneHref: "+15550142200",
+    phoneHref: "+919560920069",
+    /** Shown as plain text (e.g. in the footer); not necessarily the same
+     *  origin as `siteConfig.url`, which drives canonical/OG/sitemap URLs. */
+    website: "www.thisisdot.in",
     address: {
-      street: "1400 Harbour Gateway",
-      locality: "Newark",
-      region: "NJ",
-      postalCode: "07114",
-      country: "US",
+      street: "54, Huda Complex, Sector 29",
+      locality: "Faridabad",
+      region: "Haryana",
+      postalCode: "121008",
+      country: "IN",
     },
-    hours: "Mon-Fri, 07:00-19:00 ET",
+    hours: "Mon-Sat, 09:00-19:00 IST",
   },
 
   social: {

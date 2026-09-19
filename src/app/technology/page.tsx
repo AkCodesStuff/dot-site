@@ -1,26 +1,30 @@
+import { ComingSoon } from "@/components/sections/ComingSoon";
 import { PageHeader } from "@/components/sections/PageHeader";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card, CardBody, CardTitle } from "@/components/ui/Card";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { createMetadata } from "@/lib/seo";
+import { siteConfig } from "@/config/site";
+import { comingSoonMetadata, createMetadata } from "@/lib/seo";
 import { breadcrumbSchema, serviceSchema } from "@/lib/structured-data";
 
 const description =
   "A single logistics platform for quoting, booking, tracking and reporting — with a documented REST API, EDI support and webhooks into the systems you already run.";
 
-export const metadata = createMetadata({
-  title: "Technology",
-  description,
-  path: "/technology",
-  keywords: [
-    "logistics platform",
-    "shipment tracking API",
-    "EDI integration",
-    "transport management system",
-  ],
-});
+export const metadata = siteConfig.comingSoon
+  ? comingSoonMetadata("Technology", "/technology")
+  : createMetadata({
+      title: "Technology",
+      description,
+      path: "/technology",
+      keywords: [
+        "logistics platform",
+        "shipment tracking API",
+        "EDI integration",
+        "transport management system",
+      ],
+    });
 
 const capabilities = [
   {
@@ -76,6 +80,10 @@ const securityPoints = [
 ];
 
 export default function TechnologyPage() {
+  if (siteConfig.comingSoon) {
+    return <ComingSoon pageName="Technology" />;
+  }
+
   return (
     <>
       <JsonLd

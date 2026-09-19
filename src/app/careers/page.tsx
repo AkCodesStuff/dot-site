@@ -1,3 +1,4 @@
+import { ComingSoon } from "@/components/sections/ComingSoon";
 import { PageHeader } from "@/components/sections/PageHeader";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Badge } from "@/components/ui/Badge";
@@ -6,18 +7,20 @@ import { Card, CardBody, CardTitle } from "@/components/ui/Card";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { siteConfig } from "@/config/site";
-import { createMetadata } from "@/lib/seo";
+import { comingSoonMetadata, createMetadata } from "@/lib/seo";
 import { breadcrumbSchema, jobPostingSchema } from "@/lib/structured-data";
 
 const description =
   "Join a logistics team that ships software and freight with the same urgency. Open roles across operations, engineering and customer success.";
 
-export const metadata = createMetadata({
-  title: "Careers",
-  description,
-  path: "/careers",
-  keywords: ["logistics jobs", "freight forwarding careers", "supply chain jobs"],
-});
+export const metadata = siteConfig.comingSoon
+  ? comingSoonMetadata("Careers", "/careers")
+  : createMetadata({
+      title: "Careers",
+      description,
+      path: "/careers",
+      keywords: ["logistics jobs", "freight forwarding careers", "supply chain jobs"],
+    });
 
 /**
  * Replace this array with a fetch from your ATS (Greenhouse, Lever, Ashby...).
@@ -91,6 +94,10 @@ const benefits = [
 ];
 
 export default function CareersPage() {
+  if (siteConfig.comingSoon) {
+    return <ComingSoon pageName="Careers" />;
+  }
+
   return (
     <>
       <JsonLd

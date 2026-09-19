@@ -84,3 +84,19 @@ export function createMetadata({
         },
   };
 }
+
+/**
+ * Metadata for a page currently gated behind `siteConfig.comingSoon` (see
+ * `ComingSoon.tsx`). `noIndex` on purpose: four different URLs all showing
+ * the same placeholder is exactly the thin, duplicate content search engines
+ * shouldn't index — each page goes back to its own real `createMetadata`
+ * call once `siteConfig.comingSoon` is false.
+ */
+export function comingSoonMetadata(pageName: string, path: string): Metadata {
+  return createMetadata({
+    title: "Coming soon",
+    description: `${pageName} is coming soon. Everything else on the site is live.`,
+    path,
+    noIndex: true,
+  });
+}

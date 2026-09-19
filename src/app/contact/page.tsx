@@ -1,3 +1,4 @@
+import { ComingSoon } from "@/components/sections/ComingSoon";
 import { ContactForm } from "@/components/sections/ContactForm";
 import { PageHeader } from "@/components/sections/PageHeader";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -5,18 +6,20 @@ import { Card, CardBody, CardTitle } from "@/components/ui/Card";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { siteConfig } from "@/config/site";
-import { createMetadata } from "@/lib/seo";
+import { comingSoonMetadata, createMetadata } from "@/lib/seo";
 import { breadcrumbSchema } from "@/lib/structured-data";
 
 const description =
   "Talk to our sales, support or operations teams about freight quotes, existing shipments or partnership enquiries.";
 
-export const metadata = createMetadata({
-  title: "Contact",
-  description,
-  path: "/contact",
-  keywords: ["contact logistics company", "freight quote", "shipping support"],
-});
+export const metadata = siteConfig.comingSoon
+  ? comingSoonMetadata("Contact", "/contact")
+  : createMetadata({
+      title: "Contact",
+      description,
+      path: "/contact",
+      keywords: ["contact logistics company", "freight quote", "shipping support"],
+    });
 
 const routes = [
   {
@@ -40,6 +43,10 @@ const routes = [
 ];
 
 export default function ContactPage() {
+  if (siteConfig.comingSoon) {
+    return <ComingSoon pageName="Contact" />;
+  }
+
   const { address } = siteConfig.contact;
 
   return (

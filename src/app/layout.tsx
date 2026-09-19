@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 
-import { Footer } from "@/components/layout/Footer";
+import { ConditionalFooter } from "@/components/layout/ConditionalFooter";
 import { Navbar } from "@/components/layout/Navbar";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { siteConfig } from "@/config/site";
@@ -133,7 +133,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <main id="main" className="flex-1">
           {children}
         </main>
-        <Footer />
+        <ConditionalFooter />
       </body>
     </html>
   );

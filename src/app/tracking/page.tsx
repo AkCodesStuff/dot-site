@@ -1,3 +1,4 @@
+import { ComingSoon } from "@/components/sections/ComingSoon";
 import { PageHeader } from "@/components/sections/PageHeader";
 import { TrackingWidget } from "@/components/sections/TrackingWidget";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -6,23 +7,25 @@ import { Card, CardBody, CardTitle } from "@/components/ui/Card";
 import { Section } from "@/components/ui/Section";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { siteConfig } from "@/config/site";
-import { createMetadata } from "@/lib/seo";
+import { comingSoonMetadata, createMetadata } from "@/lib/seo";
 import { breadcrumbSchema, faqSchema } from "@/lib/structured-data";
 
 const description =
   "Track any shipment by booking reference, container number or bill of lading, and see every milestone from collection to final delivery.";
 
-export const metadata = createMetadata({
-  title: "Track a shipment",
-  description,
-  path: "/tracking",
-  keywords: [
-    "track shipment",
-    "container tracking",
-    "bill of lading tracking",
-    "freight tracking",
-  ],
-});
+export const metadata = siteConfig.comingSoon
+  ? comingSoonMetadata("Tracking", "/tracking")
+  : createMetadata({
+      title: "Track a shipment",
+      description,
+      path: "/tracking",
+      keywords: [
+        "track shipment",
+        "container tracking",
+        "bill of lading tracking",
+        "freight tracking",
+      ],
+    });
 
 const referenceTypes = [
   {
@@ -67,6 +70,10 @@ const faqs = [
 ];
 
 export default function TrackingPage() {
+  if (siteConfig.comingSoon) {
+    return <ComingSoon pageName="Tracking" />;
+  }
+
   return (
     <>
       <JsonLd
