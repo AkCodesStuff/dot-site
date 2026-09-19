@@ -106,7 +106,14 @@ export function LogoLockup({
   return (
     <div className={cn("inline-flex flex-col items-start gap-3", className)}>
       <div className="flex items-center gap-3">
-        <LogoMark className="h-14 w-14 shrink-0 sm:h-16 sm:w-16" />
+        <Image
+          src="https://res.cloudinary.com/js6wkdfq/image/upload/v1789822324/dot-logo-bg-2.png"
+          alt={siteConfig.logo.alt}
+      
+          width={60}
+          height={60}
+          priority
+        />
         <Wordmark className="text-5xl sm:text-6xl" />
       </div>
 
