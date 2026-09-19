@@ -255,7 +255,7 @@ export default function HomePage() {
       </Section> */}
 
       {/* --- Notify ---------------------------------------------------------- */}
-      <Section tone="secondary">
+      {/* <Section tone="secondary">
         <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
             <Badge tone="accent">Launching soon</Badge>
@@ -269,7 +269,7 @@ export default function HomePage() {
           </div>
           <NotifyForm />
         </div>
-      </Section>
+      </Section> */}
     </>
   );
 }

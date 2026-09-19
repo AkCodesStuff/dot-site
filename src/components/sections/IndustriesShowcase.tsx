@@ -154,7 +154,7 @@ export function IndustriesShowcase() {
     <section className="border-b border-border bg-background text-on-background">
       {/* Phone / tablet-portrait heading -- normal flow, not pinned (the
           pinned stage below is `hidden` under `lg`). */}
-      <Container className="pb-10 pt-16 sm:pb-12 sm:pt-20 lg:hidden">
+      <Container className="pt-16  sm:pt-20 lg:hidden">
         <IndustriesHeading />
       </Container>
 
@@ -166,7 +166,7 @@ export function IndustriesShowcase() {
         className="relative hidden lg:block motion-reduce:h-svh!"
       >
         <div className="sticky top-0 flex h-svh w-full flex-col overflow-hidden">
-          <Container className="shrink-0 pb-6 pt-10 lg:pb-8 lg:pt-14">
+          <Container className="shrink-0 pb-6  lg:pb-8 lg:pt-4">
             <IndustriesHeading compact />
           </Container>
 
@@ -176,7 +176,7 @@ export function IndustriesShowcase() {
               sitting at a fixed natural height and leaving a leftover void
               below on anything but one specific viewport height. `pt-8` is
               the fixed, deliberate gap below the heading. */}
-          <div className="min-h-0 flex-1 overflow-hidden pt-8 lg:pt-10">
+          <div className="min-h-0 flex-1 overflow-hidden ">
             <Container className="h-full w-full">
               {/* Group A sits in normal flow and sets the box's height (both
                   groups share the same card shape, so this height is correct

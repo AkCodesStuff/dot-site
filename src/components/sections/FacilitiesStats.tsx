@@ -41,7 +41,7 @@ const FACILITIES: Facility[] = [
   },
   {
     number: "04",
-    label: "Warehouse development",
+    label: "Warehouse ",
     stat: "265,000",
     unit: "SQ FT",
     description: "Strategically developing warehousing capacity to strengthen DOT's broader logistics ecosystem.",
@@ -92,7 +92,7 @@ export function FacilitiesStats() {
   }, []);
 
   return (
-    <section className="border-b border-border bg-background text-on-background mt-20">
+    <section className="border-b border-border bg-background text-on-background ">
       <Container className="py-16 lg:py-20">
         <div
           ref={ref}
@@ -108,7 +108,7 @@ export function FacilitiesStats() {
                 "lg:border-l lg:border-border lg:px-8 lg:first:border-l-0 lg:first:pl-0",
               )}
             >
-              <p className="text-sm font-semibold text-on-muted">{facility.number}</p>
+      
               <span aria-hidden="true" className="mt-1 block h-0.5 w-6 rounded-full bg-accent" />
 
               <span
@@ -127,9 +127,7 @@ export function FacilitiesStats() {
               </p>
 
               <span aria-hidden="true" className="mt-3 block h-px w-8 bg-border" />
-              <p className="mt-3 text-sm leading-relaxed text-on-muted">
-                {facility.description}
-              </p>
+            
             </div>
           ))}
         </div>
