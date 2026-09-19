@@ -192,3 +192,72 @@
     scroll-behavior: auto;
   }
 }
+
+/* ============================================================================
+   LEAFLET OVERRIDES — used by LiveNetworkMap (the dark "network" section).
+   ----------------------------------------------------------------------------
+   Leaflet ships its own default control styling (white boxes, black text)
+   that only makes sense on a light basemap. Scoped to `.leaflet-container` so
+   it never leaks into anything else, and built entirely from our tokens so it
+   still follows the "no colour literals outside this file" rule.
+   ========================================================================== */
+.leaflet-container {
+  background: var(--overlay);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  outline: none;
+}
+
+.leaflet-container .leaflet-control-attribution {
+  background: color-mix(in srgb, var(--overlay) 70%, transparent);
+  color: var(--on-overlay);
+  opacity: 0.6;
+  font-size: 0.65rem;
+}
+
+.leaflet-container .leaflet-control-attribution a {
+  color: var(--on-overlay);
+}
+
+/* The connecting lines drawn on the network map. Leaflet sets `stroke` as a
+   raw SVG presentation attribute (not a CSS property), so a `var()` handed
+   to its `color` path option never resolves — a plain CSS rule targeting
+   this class is what actually colours the line, and (per the SVG/CSS
+   cascade) automatically wins over that attribute regardless. */
+.network-line {
+  stroke: var(--accent);
+}
+
+/* City labels sit directly on the tile imagery, whose brightness varies, so
+   they get a soft dark contact shadow rather than relying on the label's
+   own colour alone. */
+.network-label {
+  text-shadow: 0 1px 3px color-mix(in srgb, var(--overlay) 85%, transparent);
+}
+
+/* Soft pulse on each network node, so the "live" dots read as active rather
+   than static map pins. Decorative only — respects reduced motion below. */
+@keyframes network-pulse {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.network-node__pulse {
+  animation: network-pulse 2.4s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .network-node__pulse {
+    animation: none;
+    display: none;
+  }
+}

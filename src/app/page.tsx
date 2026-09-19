@@ -1,5 +1,6 @@
 import { LogoLockup } from "@/components/layout/Logo";
 import { Hero } from "@/components/sections/Hero";
+import { LiveNetworkSection } from "@/components/sections/LiveNetworkMap";
 import { NotifyForm } from "@/components/sections/NotifyForm";
 import type { Solution } from "@/components/sections/SolutionsShowcase";
 import { SolutionsShowcase } from "@/components/sections/SolutionsShowcase";
@@ -176,6 +177,18 @@ export default function HomePage() {
         title="End-to-end logistics, built around your business."
         description="From full truckload to express deliveries, and warehousing to last-mile — DOT covers the full range of logistics, built around what your business actually needs."
         solutions={solutions}
+      />
+
+      {/* --- Live network ------------------------------------------------------ */}
+      <LiveNetworkSection
+        eyebrow="Live network"
+        title={
+          <>
+            A network in <span className="text-accent">motion.</span>
+          </>
+        }
+        description="Real-time visibility across every lane, keeping your business ahead."
+        cta={{ label: "Explore our network", href: "/technology" }}
       />
 
       {/* --- What's coming -------------------------------------------------- */}
