@@ -4,6 +4,7 @@ import { ScrollVideo } from "@/components/media/ScrollVideo";
 import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { siteConfig } from "@/config/site";
+import { cn } from "@/lib/utils";
 
 /**
  * ============================================================================
@@ -11,11 +12,12 @@ import { siteConfig } from "@/config/site";
  * ============================================================================
  * Two modes, chosen automatically:
  *
- *   siteConfig.hero.videoSrc === null  ->  static hero (what you see today)
+ *   siteConfig.hero.videoSrc === null   ->  light hero (what you see today)
  *   siteConfig.hero.videoSrc === "..."  ->  scroll-scrubbed video background
  *
- * The overlay copy is identical in both modes, so dropping the video in later
- * is a one-line config change — no markup rewrite.
+ * The copy and layout are identical in both modes; only the colour treatment
+ * swaps, because the video sits under a DOT Black scrim and needs inverted
+ * text. Dropping the video in later is a one-line config change.
  */
 export function Hero({
   eyebrow,
@@ -30,30 +32,38 @@ export function Hero({
   primaryCta: { label: string; href: string };
   secondaryCta?: { label: string; href: string };
 }) {
+  const overVideo = Boolean(siteConfig.hero.videoSrc);
+
   const content = (
     <Container>
       <div className="max-w-3xl py-20 sm:py-28">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-accent">
+        <p
+          className={cn(
+            "mb-4 text-sm font-semibold uppercase tracking-[0.2em]",
+            overVideo ? "text-accent" : "text-secondary",
+          )}
+        >
           {eyebrow}
         </p>
         <h1 className="text-balance text-4xl font-semibold tracking-tight sm:text-5xl lg:text-6xl">
           {title}
         </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-pretty opacity-80">
+        <p
+          className={cn(
+            "mt-6 max-w-2xl text-lg leading-relaxed text-pretty",
+            overVideo ? "opacity-80" : "text-on-muted",
+          )}
+        >
           {description}
         </p>
         <div className="mt-9 flex flex-wrap gap-3">
-          <ButtonLink
-            href={primaryCta.href}
-            variant="accent"
-            size="lg"
-          >
+          <ButtonLink href={primaryCta.href} variant="accent" size="lg">
             {primaryCta.label}
           </ButtonLink>
           {secondaryCta ? (
             <ButtonLink
               href={secondaryCta.href}
-              variant="onOverlay"
+              variant={overVideo ? "onOverlay" : "outline"}
               size="lg"
             >
               {secondaryCta.label}
@@ -79,11 +89,13 @@ export function Hero({
   }
 
   return (
-    <section className="relative overflow-hidden bg-overlay text-on-overlay">
-      {/* Placeholder backdrop — replaced by the video once it is configured. */}
+    <section className="relative overflow-hidden border-b border-border bg-surface text-on-surface">
+      {/* Placeholder backdrop — replaced by the video once it is configured.
+          A soft DOT Yellow wash bleeding in from the right, at low opacity so
+          it stays a tint of the signature colour rather than a new one. */}
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-br from-primary via-overlay to-secondary opacity-90"
+        className="pointer-events-none absolute -right-24 -top-32 hidden h-[36rem] w-[36rem] rounded-full bg-accent/15 blur-3xl lg:block"
       />
       <div className="relative">{content}</div>
     </section>

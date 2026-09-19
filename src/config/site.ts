@@ -100,12 +100,9 @@ export const siteConfig = {
    * The ONE place a colour literal is allowed outside `globals.css`.
    * `<meta name="theme-color">` paints the mobile browser chrome and is read
    * by the browser before any CSS loads, so it cannot reference a CSS token.
-   * Keep these two values in sync with `--background` in `src/app/globals.css`.
+   * This is DOT White — keep it in sync with `--background` in `globals.css`.
    */
-  browserThemeColor: {
-    light: "#ffffff",
-    dark: "#0a1622",
-  },
+  browserThemeColor: "#ffffff",
 
   contact: {
     email: "hello@meridian-logistics.com",

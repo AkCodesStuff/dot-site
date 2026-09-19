@@ -100,7 +100,7 @@ export default function HomePage() {
       />
 
       {/* --- Stats ---------------------------------------------------------- */}
-      <Section tone="surface" className="py-12 sm:py-14 lg:py-16">
+      <Section className="py-12 sm:py-14 lg:py-16">
         <dl className="grid grid-cols-2 gap-8 lg:grid-cols-4">
           {stats.map((stat) => (
             <div key={stat.label}>
@@ -119,7 +119,7 @@ export default function HomePage() {
       </Section>
 
       {/* --- Services ------------------------------------------------------- */}
-      <Section>
+      <Section tone="surface">
         <SectionHeading
           eyebrow="What we do"
           title="A full logistics stack, not a patchwork of vendors"
@@ -137,7 +137,7 @@ export default function HomePage() {
       </Section>
 
       {/* --- Why us --------------------------------------------------------- */}
-      <Section tone="surface">
+      <Section>
         <div className="grid gap-12 lg:grid-cols-2 lg:items-start">
           <SectionHeading
             eyebrow="Why shippers switch"
@@ -164,14 +164,14 @@ export default function HomePage() {
       </Section>
 
       {/* --- CTA ------------------------------------------------------------ */}
-      <Section tone="primary">
+      <Section tone="secondary">
         <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
             <Badge tone="accent">Free lane analysis</Badge>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight sm:text-4xl">
               Send us your three worst lanes
             </h2>
-            <p className="mt-4 text-lg leading-relaxed text-on-primary/80">
+            <p className="mt-4 text-lg leading-relaxed text-on-secondary/80">
               We will come back within two business days with routing options,
               indicative rates and where the time is actually being lost.
             </p>

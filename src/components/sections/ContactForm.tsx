@@ -133,7 +133,7 @@ export function ContactForm() {
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-4">
-        <Button type="submit" size="lg">
+        <Button type="submit" variant="accent" size="lg">
           Send message
         </Button>
         {status === "sent" ? (

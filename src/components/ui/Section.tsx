@@ -3,12 +3,20 @@ import type { ReactNode } from "react";
 import { Container } from "@/components/ui/Container";
 import { cn } from "@/lib/utils";
 
-type Tone = "background" | "surface" | "primary" | "muted";
+type Tone =
+  | "background"
+  | "surface"
+  | "primary"
+  | "secondary"
+  | "accent"
+  | "muted";
 
 const toneClasses: Record<Tone, string> = {
   background: "bg-background text-on-background",
   surface: "bg-surface text-on-surface",
   primary: "bg-primary text-on-primary",
+  secondary: "bg-secondary text-on-secondary",
+  accent: "bg-accent text-on-accent",
   muted: "bg-muted text-on-muted",
 };
 

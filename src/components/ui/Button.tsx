@@ -19,9 +19,10 @@ const base =
 const variants: Record<Variant, string> = {
   primary: "bg-primary text-on-primary hover:bg-primary-hover",
   secondary: "bg-secondary text-on-secondary hover:bg-secondary-hover",
-  accent: "bg-accent text-on-accent hover:bg-accent-hover",
+  accent:
+    "bg-accent text-on-accent hover:bg-accent-hover hover:text-on-accent-hover",
   outline:
-    "border border-border bg-transparent text-on-background hover:bg-muted hover:text-on-muted",
+    "border border-border bg-transparent text-on-background hover:bg-muted",
   ghost: "bg-transparent text-primary hover:bg-muted",
   onOverlay:
     "border border-on-overlay/40 bg-on-overlay/10 text-on-overlay backdrop-blur-sm hover:bg-on-overlay/20",

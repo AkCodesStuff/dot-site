@@ -19,14 +19,13 @@ export function PageHeader({
   children?: ReactNode;
 }) {
   return (
-    <section className="border-b border-border bg-primary text-on-primary">
+    <section className="border-b border-border bg-surface text-on-surface">
       <Container className="py-16 lg:py-24">
         <SectionHeading
           as="h1"
           eyebrow={eyebrow}
           title={title}
           description={description}
-          invert
         />
         {children ? <div className="mt-10">{children}</div> : null}
       </Container>

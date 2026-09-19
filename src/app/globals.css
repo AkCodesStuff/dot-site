@@ -1,161 +1,111 @@
 @import "tailwindcss";
 
 /* ============================================================================
-   DESIGN TOKENS — the single source of truth for every colour in the project.
+   DOT BRAND PALETTE — the only colours in this project.
    ----------------------------------------------------------------------------
-   RULE: never write a colour literal (#hex, rgb(), oklch(), or a stock Tailwind
-   palette class such as `bg-blue-600`) anywhere outside this file.
-   Components must only use token utilities: `bg-primary`, `text-on-primary`,
-   `border-border`, `bg-surface`, `text-on-surface`, and so on.
+   DOT Yellow      #FFC300   Signature. The DOT dot, highlights and key CTAs.
+   DOT Black       #0A0B0C   Primary. Logo, headlines, strong contrast.
+   DOT White       #FFFFFF   Primary. Backgrounds, space, a clean modern look.
+   DOT Deep Blue   #123B66   Secondary. Fleet, transport and brand elements.
+   DOT Grey        #6B7280   Secondary. Supporting text, icons, hierarchy.
+   DOT Light Grey  #F3F4F6   Background. Backgrounds, cards, subtle separators.
 
-   Every `--x` background token has a matching `--on-x` foreground token that is
-   guaranteed to be readable on top of it. Pair them: bg-accent + text-on-accent.
+   RULES
+   - No colour literal may appear anywhere outside this file: no #hex, no
+     rgb()/hsl()/oklch(), and no stock Tailwind palette class -- anything of
+     the form bg-{hue}-{number} is off-brand by definition. (Written without a
+     real example on purpose: Tailwind v4 scans comments, so naming one here
+     would generate the very class this rule forbids.)
+   - No hue outside the six above. Semantic tokens are aliases onto the raw
+     palette below, never new colours.
+   - Opacity modifiers on a token (`bg-overlay/60`, `text-on-secondary/80`) are
+     allowed — they are transparency of a brand colour, not a new hue.
+   - The theme is light. There is deliberately no dark mode: a dark theme would
+     need tints and shades that do not exist in this palette.
    ========================================================================== */
 
 :root {
+  color-scheme: light;
+
+  /* --- Raw palette. The only place these six values are written. ---------- */
+  --dot-yellow: #ffc300;
+  --dot-black: #0a0b0c;
+  --dot-white: #ffffff;
+  --dot-deep-blue: #123b66;
+  --dot-grey: #6b7280;
+  --dot-light-grey: #f3f4f6;
+
+  /* ==========================================================================
+     Semantic tokens. Components use only these.
+     Every surface token has a matching `on-*` foreground token that is
+     readable on it — always use them as a pair.
+     ====================================================================== */
+
   /* --- Brand ------------------------------------------------------------- */
-  --primary: #0f2e4c;
-  --primary-hover: #17456f;
-  --on-primary: #f8fafc;
+  /* Black is the brand's primary. Hovering swaps it to Deep Blue rather than
+     shading it, because the palette has no second black. */
+  --primary: var(--dot-black);
+  --primary-hover: var(--dot-deep-blue);
+  --on-primary: var(--dot-white);
 
-  --secondary: #2f6d8c;
-  --secondary-hover: #3a83a6;
-  --on-secondary: #f8fafc;
+  --secondary: var(--dot-deep-blue);
+  --secondary-hover: var(--dot-black);
+  --on-secondary: var(--dot-white);
 
-  --accent: #f59e0b;
-  --accent-hover: #d98706;
-  --on-accent: #231704;
+  /* Yellow inverts to black-on-yellow-text on hover — again, no second yellow
+     exists to shade towards, so `on-accent-hover` flips with it. */
+  --accent: var(--dot-yellow);
+  --accent-hover: var(--dot-black);
+  --on-accent: var(--dot-black);
+  --on-accent-hover: var(--dot-yellow);
 
   /* --- Surfaces ---------------------------------------------------------- */
-  --background: #ffffff;
-  --on-background: #0f172a;
+  --background: var(--dot-white);
+  --on-background: var(--dot-black);
 
-  --surface: #f5f8fb;
-  --on-surface: #1e293b;
+  --surface: var(--dot-light-grey);
+  --on-surface: var(--dot-black);
 
-  --surface-raised: #ffffff;
-  --on-surface-raised: #0f172a;
+  --surface-raised: var(--dot-white);
+  --on-surface-raised: var(--dot-black);
 
-  --muted: #e9eef4;
-  --on-muted: #5b6b80;
+  --muted: var(--dot-light-grey);
+  --on-muted: var(--dot-grey);
 
   /* --- Lines & focus ----------------------------------------------------- */
-  --border: #dbe3ec;
-  --outline: #2f6d8c;
+  /* The one derived value in the project: a tint of DOT Grey over DOT White.
+     Full DOT Grey is too heavy for a 1px rule, and DOT Light Grey is invisible
+     against white. Both inputs are palette colours. */
+  --border: color-mix(in srgb, var(--dot-grey) 28%, var(--dot-white));
+  --outline: var(--dot-deep-blue);
 
-  /* --- Status ------------------------------------------------------------ */
-  --success: #15803d;
-  --on-success: #f0fdf4;
+  /* --- Status -----------------------------------------------------------
+     The brand has no red or green, so status is carried by weight rather than
+     by hue: black reads as most severe, yellow as attention, blue as positive
+     or in-progress, grey as neutral information. */
+  --success: var(--dot-deep-blue);
+  --on-success: var(--dot-white);
 
-  --warning: #b45309;
-  --on-warning: #fffbeb;
+  --warning: var(--dot-yellow);
+  --on-warning: var(--dot-black);
 
-  --danger: #b91c1c;
-  --on-danger: #fef2f2;
+  --danger: var(--dot-black);
+  --on-danger: var(--dot-white);
 
-  --info: #1d4ed8;
-  --on-info: #eff6ff;
+  --info: var(--dot-grey);
+  --on-info: var(--dot-white);
 
   /* --- Media overlay ----------------------------------------------------- */
-  /* Scrim laid over the hero video so foreground copy stays readable.
-     Always stays "dark" in both themes because it sits on top of footage. */
-  --overlay: #04121f;
-  --on-overlay: #f8fafc;
-}
-
-/* Explicit opt-in dark theme: <html data-theme="dark"> */
-[data-theme="dark"] {
-  --primary: #4d97d1;
-  --primary-hover: #6aabdd;
-  --on-primary: #05172a;
-
-  --secondary: #5fa8c6;
-  --secondary-hover: #7bbcd6;
-  --on-secondary: #05202b;
-
-  --accent: #fbbf24;
-  --accent-hover: #fcd34d;
-  --on-accent: #231704;
-
-  --background: #0a1622;
-  --on-background: #e6edf5;
-
-  --surface: #0f1f2f;
-  --on-surface: #d7e2ee;
-
-  --surface-raised: #15293c;
-  --on-surface-raised: #e6edf5;
-
-  --muted: #1b3145;
-  --on-muted: #93a5ba;
-
-  --border: #24394e;
-  --outline: #5fa8c6;
-
-  --success: #22c55e;
-  --on-success: #04210f;
-
-  --warning: #f59e0b;
-  --on-warning: #2a1b02;
-
-  --danger: #ef4444;
-  --on-danger: #2a0707;
-
-  --info: #60a5fa;
-  --on-info: #06172e;
-
-  --overlay: #04121f;
-  --on-overlay: #f8fafc;
-}
-
-/* System preference, unless the user explicitly forced light. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --primary: #4d97d1;
-    --primary-hover: #6aabdd;
-    --on-primary: #05172a;
-
-    --secondary: #5fa8c6;
-    --secondary-hover: #7bbcd6;
-    --on-secondary: #05202b;
-
-    --accent: #fbbf24;
-    --accent-hover: #fcd34d;
-    --on-accent: #231704;
-
-    --background: #0a1622;
-    --on-background: #e6edf5;
-
-    --surface: #0f1f2f;
-    --on-surface: #d7e2ee;
-
-    --surface-raised: #15293c;
-    --on-surface-raised: #e6edf5;
-
-    --muted: #1b3145;
-    --on-muted: #93a5ba;
-
-    --border: #24394e;
-    --outline: #5fa8c6;
-
-    --success: #22c55e;
-    --on-success: #04210f;
-
-    --warning: #f59e0b;
-    --on-warning: #2a1b02;
-
-    --danger: #ef4444;
-    --on-danger: #2a0707;
-
-    --info: #60a5fa;
-    --on-info: #06172e;
-  }
+  /* Scrim laid over the hero video so foreground copy stays readable. Black,
+     used at partial opacity, so footage still reads through it. */
+  --overlay: var(--dot-black);
+  --on-overlay: var(--dot-white);
 }
 
 /* ============================================================================
    Expose the tokens to Tailwind. `inline` keeps the raw `var(--token)` in the
    generated CSS, so re-assigning a token above instantly re-themes every
-   utility at runtime — no rebuild, no duplicated dark-mode classes.
+   utility at runtime.
    ========================================================================== */
 @theme inline {
   --color-primary: var(--primary);
@@ -169,6 +119,7 @@
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
   --color-on-accent: var(--on-accent);
+  --color-on-accent-hover: var(--on-accent-hover);
 
   --color-background: var(--background);
   --color-on-background: var(--on-background);

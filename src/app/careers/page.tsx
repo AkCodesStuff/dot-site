@@ -190,13 +190,13 @@ export default function CareersPage() {
         </div>
       </Section>
 
-      <Section tone="primary">
+      <Section tone="secondary">
         <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               Not seeing your role?
             </h2>
-            <p className="mt-4 text-lg leading-relaxed text-on-primary/80">
+            <p className="mt-4 text-lg leading-relaxed text-on-secondary/80">
               Tell us what you would want to own. Applications go straight to the
               hiring team at {siteConfig.contact.email}.
             </p>

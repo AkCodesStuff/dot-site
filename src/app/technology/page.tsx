@@ -156,7 +156,7 @@ export default function TechnologyPage() {
         </div>
       </Section>
 
-      <Section tone="primary">
+      <Section tone="secondary">
         <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
           <h2 className="max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
             Want a walkthrough with your own lane data?

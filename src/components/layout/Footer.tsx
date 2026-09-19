@@ -15,12 +15,12 @@ export function Footer() {
   const { address } = siteConfig.contact;
 
   return (
-    <footer className="border-t border-border bg-primary text-on-primary">
+    <footer className="border-t border-border bg-surface text-on-surface">
       <Container className="py-14 lg:py-16">
         <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <Logo className="text-on-primary" />
-            <p className="mt-4 max-w-sm text-sm leading-relaxed text-on-primary/75">
+            <Logo className="text-primary" />
+            <p className="mt-4 max-w-sm text-sm leading-relaxed text-on-muted">
               {siteConfig.description}
             </p>
             <ul className="mt-6 flex flex-wrap gap-4">
@@ -30,7 +30,7 @@ export function Footer() {
                     href={href}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="text-sm font-medium text-on-primary/75 underline-offset-4 transition-colors hover:text-accent hover:underline"
+                    className="text-sm font-medium text-on-muted underline-offset-4 transition-colors hover:text-secondary hover:underline"
                   >
                     {socialLabels[key] ?? key}
                   </a>
@@ -40,7 +40,7 @@ export function Footer() {
           </div>
 
           <nav aria-label="Footer">
-            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-secondary">
               Pages
             </h2>
             <ul className="mt-4 space-y-3">
@@ -48,7 +48,7 @@ export function Footer() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="text-sm text-on-primary/75 underline-offset-4 transition-colors hover:text-on-primary hover:underline"
+                    className="text-sm text-on-muted underline-offset-4 transition-colors hover:text-primary hover:underline"
                   >
                     {item.label}
                   </Link>
@@ -58,10 +58,10 @@ export function Footer() {
           </nav>
 
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-secondary">
               Get in touch
             </h2>
-            <address className="mt-4 space-y-3 text-sm not-italic text-on-primary/75">
+            <address className="mt-4 space-y-3 text-sm not-italic text-on-muted">
               <p>
                 {address.street}
                 <br />
@@ -72,7 +72,7 @@ export function Footer() {
               <p>
                 <a
                   href={`tel:${siteConfig.contact.phoneHref}`}
-                  className="underline-offset-4 transition-colors hover:text-on-primary hover:underline"
+                  className="underline-offset-4 transition-colors hover:text-primary hover:underline"
                 >
                   {siteConfig.contact.phone}
                 </a>
@@ -80,7 +80,7 @@ export function Footer() {
               <p>
                 <a
                   href={`mailto:${siteConfig.contact.email}`}
-                  className="underline-offset-4 transition-colors hover:text-on-primary hover:underline"
+                  className="underline-offset-4 transition-colors hover:text-primary hover:underline"
                 >
                   {siteConfig.contact.email}
                 </a>
@@ -90,7 +90,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-on-primary/15 pt-6 text-sm text-on-primary/60">
+        <div className="mt-12 border-t border-border pt-6 text-sm text-on-muted">
           <p>
             &copy; {year} {siteConfig.name}. All rights reserved.
           </p>

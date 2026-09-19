@@ -20,43 +20,73 @@ npm run build && npm start
 
 ---
 
-## Colour tokens
+## Colour tokens — the DOT palette
 
-All colours are declared once in `src/app/globals.css` and exposed to Tailwind
-through `@theme inline`. **No component contains a colour literal** — no `#hex`,
-no `rgb()`, and no stock Tailwind palette class like `bg-blue-600`.
+The project uses **six colours and nothing else**. They are written once, as raw
+palette variables, at the top of [`src/app/globals.css`](src/app/globals.css):
 
-Each background token has a matching `on-*` foreground token that is readable on
-top of it. Always use them in pairs:
+| Swatch | Hex | Role | Used for |
+| --- | --- | --- | --- |
+| DOT Yellow | `#FFC300` | Signature | The DOT dot, highlights, key CTAs |
+| DOT Black | `#0A0B0C` | Primary | Logo, headlines, strong contrast |
+| DOT White | `#FFFFFF` | Primary | Backgrounds, space |
+| DOT Deep Blue | `#123B66` | Secondary | Fleet, transport, brand elements |
+| DOT Grey | `#6B7280` | Secondary | Supporting text, icons, hierarchy |
+| DOT Light Grey | `#F3F4F6` | Background | Backgrounds, cards, separators |
+
+Everything else is a **semantic alias onto those six**. Components never touch
+the raw palette — they use the semantic token, always as a background +
+foreground pair:
 
 ```tsx
-<div className="bg-primary text-on-primary">…</div>
+<div className="bg-secondary text-on-secondary">…</div>
 <span className="bg-warning text-on-warning">Delayed</span>
 ```
 
-| Background | Foreground | Used for |
+| Token | Resolves to | Used for |
 | --- | --- | --- |
-| `primary` / `primary-hover` | `on-primary` | Brand bands, footer, primary buttons |
-| `secondary` / `secondary-hover` | `on-secondary` | Eyebrows, secondary actions |
-| `accent` / `accent-hover` | `on-accent` | Highlights, main CTAs, active tab underline |
-| `background` | `on-background` | Page base |
-| `surface` | `on-surface` | Alternating section bands |
-| `surface-raised` | `on-surface-raised` | Cards sitting on a surface |
-| `muted` | `on-muted` | Chips, secondary body copy |
-| `border`, `outline` | — | Hairlines, focus rings |
-| `success` `warning` `danger` `info` | `on-*` | Shipment status badges |
-| `overlay` | `on-overlay` | Scrim over the hero video |
+| `primary` / `on-primary` | Black / White | Headlines, default buttons, skip link |
+| `primary-hover` | Deep Blue | Black buttons on hover |
+| `secondary` / `on-secondary` | Deep Blue / White | Eyebrows, closing CTA bands |
+| `accent` / `on-accent` | Yellow / Black | Key CTAs, active tab underline, accents |
+| `accent-hover` / `on-accent-hover` | Black / Yellow | Yellow buttons invert on hover |
+| `background` / `on-background` | White / Black | Page base |
+| `surface` / `on-surface` | Light Grey / Black | Alternating bands, hero, header, footer |
+| `surface-raised` / `on-surface-raised` | White / Black | Cards on tinted bands |
+| `muted` / `on-muted` | Light Grey / Grey | Chips, supporting body copy |
+| `border` | 28% Grey on White | Hairlines, card edges, dividers |
+| `outline` | Deep Blue | Focus rings |
+| `success` `warning` `danger` `info` | Deep Blue, Yellow, Black, Grey | Status badges |
+| `overlay` / `on-overlay` | Black / White | Scrim over the hero video |
 
-**Retheming the whole site** = change the values under `:root`. Because the
-tokens are declared with `@theme inline`, every utility resolves to
-`var(--token)` at runtime, so there is nothing to duplicate for dark mode.
+**Why status colours are not red/green.** The palette has no red or green, so
+severity is carried by weight instead of hue: black reads as most severe,
+yellow as attention, deep blue as positive or in progress, grey as neutral.
 
-Dark mode is already handled three ways: `prefers-color-scheme`,
-`<html data-theme="dark">` to force it, and `data-theme="light"` to opt out.
+**The one derived value.** `--border` is a 28% tint of DOT Grey over DOT White.
+Full DOT Grey is too heavy for a 1px rule and DOT Light Grey is invisible
+against white; both inputs are palette colours. Change it in one place if you
+would rather have a flat palette colour there.
 
-> The single documented exception is `siteConfig.browserThemeColor`. The
-> `<meta name="theme-color">` tag is read by the browser before any CSS loads,
-> so it cannot reference a CSS variable. Keep it in sync with `--background`.
+**Opacity is allowed.** `bg-accent/15`, `text-on-secondary/80` and similar are
+transparency applied to a brand colour, not a new hue.
+
+**There is no dark mode.** A dark theme would need tints and shades that this
+palette does not define, so the site is light-only and `color-scheme` is pinned
+to `light`. Retheming is still a matter of changing the six values at the top of
+`globals.css` — because the tokens are declared with `@theme inline`, every
+utility resolves to `var(--token)` at runtime and no component needs touching.
+
+> One documented exception lives outside `globals.css`:
+> `siteConfig.browserThemeColor`. The `<meta name="theme-color">` tag is read by
+> the browser before any CSS loads, so it cannot reference a CSS variable. It is
+> DOT White — keep it in sync with `--background`.
+
+> **Accessibility note.** DOT Grey on DOT White is 4.49:1 (passes AA). DOT Grey
+> on DOT Light Grey is 4.08:1, marginally under AA for normal text — that
+> pairing is the brand's own, so it is kept as specified. If you want AA
+> everywhere, darken `--on-muted` towards `--dot-black` in `globals.css`; it is
+> a one-line change and no component is affected.
 
 ---
 

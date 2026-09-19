@@ -36,7 +36,7 @@ const DEMO_REFERENCE = "MRD-4820193";
 const demoResult: TrackingResult = {
   reference: DEMO_REFERENCE,
   status: "In transit",
-  tone: "info",
+  tone: "success",
   mode: "Ocean FCL - 40ft HC",
   origin: "Shanghai, CN",
   destination: "Newark, NJ, US",
@@ -137,7 +137,7 @@ export function TrackingWidget() {
         </Button>
       </form>
 
-      <p className="mt-3 text-sm text-on-primary/70">
+      <p className="mt-3 text-sm text-on-muted">
         Demo data only - try <code className="font-mono">{DEMO_REFERENCE}</code>.
       </p>
 

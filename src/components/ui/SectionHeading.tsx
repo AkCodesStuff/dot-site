@@ -23,7 +23,10 @@ export function SectionHeading({
   align?: "left" | "center";
   as?: "h1" | "h2" | "h3";
   className?: string;
-  /** Use on dark bands where the surrounding text colour is already inverted. */
+  /**
+    * Set on a tinted band (Deep Blue, Black) where the section already sets an
+    * inverted text colour. Inherits that colour instead of picking its own.
+    */
   invert?: boolean;
 }) {
   return (
@@ -60,7 +63,7 @@ export function SectionHeading({
         <p
           className={cn(
             "mt-5 text-lg leading-relaxed text-pretty",
-            invert ? "text-on-primary/80" : "text-on-muted",
+            invert ? "text-current opacity-80" : "text-on-muted",
           )}
         >
           {description}

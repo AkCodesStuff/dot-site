@@ -70,7 +70,11 @@ export function Navbar() {
 
           {/* --- Desktop CTA ---------------------------------------------- */}
           <div className="hidden lg:block">
-            <ButtonLink href={siteConfig.navCta.href} size="sm">
+            <ButtonLink
+              href={siteConfig.navCta.href}
+              variant="accent"
+              size="sm"
+            >
               {siteConfig.navCta.label}
             </ButtonLink>
           </div>
@@ -124,6 +128,7 @@ export function Navbar() {
           <ButtonLink
             href={siteConfig.navCta.href}
             onClick={closeMenu}
+            variant="accent"
             className="mt-4 w-full"
           >
             {siteConfig.navCta.label}

@@ -125,13 +125,13 @@ export default function TrackingPage() {
         </div>
       </Section>
 
-      <Section tone="primary">
+      <Section tone="secondary">
         <div className="flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
           <div className="max-w-2xl">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               Still cannot find it?
             </h2>
-            <p className="mt-4 text-lg leading-relaxed text-on-primary/80">
+            <p className="mt-4 text-lg leading-relaxed text-on-secondary/80">
               The control tower is staffed 24/7. Call {siteConfig.contact.phone}{" "}
               or send us the reference and we will track it down.
             </p>
