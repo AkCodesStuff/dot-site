@@ -1,5 +1,7 @@
 import { LogoLockup } from "@/components/layout/Logo";
+import { ClientsMosaic } from "@/components/sections/ClientsMosaic";
 import { Hero } from "@/components/sections/Hero";
+import { IndustriesShowcase } from "@/components/sections/IndustriesShowcase";
 import { LiveNetworkSection } from "@/components/sections/LiveNetworkMap";
 import { NotifyForm } from "@/components/sections/NotifyForm";
 import type { Solution } from "@/components/sections/SolutionsShowcase";
@@ -194,6 +196,12 @@ export default function HomePage() {
 
       {/* --- Fleet stats ------------------------------------------------------ */}
       <StatsStrip />
+
+      {/* --- Industries ------------------------------------------------------- */}
+      <IndustriesShowcase />
+
+      {/* --- Clients ------------------------------------------------------------ */}
+      <ClientsMosaic />
 
       {/* --- What's coming -------------------------------------------------- */}
       <Section tone="surface">
