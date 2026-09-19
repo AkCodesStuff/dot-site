@@ -170,14 +170,22 @@ export function IndustriesShowcase() {
             <IndustriesHeading compact />
           </Container>
 
-          <div className="flex min-h-0 flex-1 items-center">
+          {/* `min-h-0 flex-1` gives this whatever the heading leaves behind;
+              the row sits a fixed distance below the heading rather than
+              being vertically centred in that space, which on anything but
+              a very short viewport left a huge, viewport-size-dependent gap
+              above the row (and another below it) that read as accidental
+              rather than designed. Any leftover room now falls below the
+              row instead, which is the ordinary, expected way a section
+              ends. */}
+          <div className="min-h-0 flex-1 overflow-hidden">
             <Container className="w-full">
               {/* Group A sits in normal flow and sets the box's height (both
                   groups share the same card shape, so this height is correct
                   for either); group B is absolutely stacked on top of it, so
                   the two crossfade in the same spot rather than one pushing
                   the other down the page. */}
-              <div className="relative">
+              <div className="relative mt-8 lg:mt-10">
                 <div ref={rowARef} className="grid grid-cols-3 gap-6 opacity-100">
                   {GROUP_A.map((industry, index) => (
                     <IndustryCard
