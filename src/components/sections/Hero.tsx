@@ -53,7 +53,7 @@ export function Hero({
         <div className="absolute inset-0 pointer-events-none">
   <div
     className="absolute
-
+          
           top-1/2 -translate-y-1/2
            w-[90%] h-[55%]
            rounded-full

@@ -154,10 +154,13 @@
   /* ==========================================================================
      Type system — headline / body / numbers-data-UI, per the brand spec.
      Söhne isn't licensed yet (see the long comment in layout.tsx), so
-     --font-headline falls back to Inter until real Söhne files are added;
-     changing it there is the only edit needed to bring Söhne in everywhere.
+     --font-headline runs on Familjen Grotesk, a free grotesque with Söhne's
+     proportions, until real Söhne files are added; swapping the font
+     instance in layout.tsx is the only edit needed to bring real Söhne in
+     everywhere, since it feeds the same --font-headline-family variable.
      ====================================================================== */
-  --font-headline: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-headline: var(--font-headline-family), var(--font-inter),
+    ui-sans-serif, system-ui, sans-serif;
   --font-body: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-ui: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 

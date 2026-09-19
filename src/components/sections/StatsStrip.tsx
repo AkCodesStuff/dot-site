@@ -16,11 +16,11 @@ type Stat = {
  * the demo data in TrackingWidget and the roles array on the careers page.
  */
 const STATS: Stat[] = [
-  { icon: "truck", value: "1,200+", label: "Active vehicles" },
-  { icon: "container", value: "20 & 40 FT.", label: "Container fleet" },
-  { icon: "weight", value: "10–25 MT", label: "Carrying capacity" },
-  { icon: "height", value: "12 FT HQ", label: "High-cube for more volume" },
-  { icon: "road", value: "~10,000 KM", label: "Average monthly run / vehicle" },
+  { icon: "truck", value: "850+", label: "Active vehicles" },
+  { icon: "container", value: "32 & 34 FT.", label: "Container fleet" },
+  { icon: "weight", value: "7-9 MT", label: "Carrying capacity" },
+  { icon: "height", value: "10.5 FT HQ", label: "High-cube for more volume" },
+  { icon: "road", value: "~9,000 KM", label: "Average monthly run / vehicle" },
 ];
 
 /**
