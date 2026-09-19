@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
@@ -9,14 +9,40 @@ import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+/**
+ * ============================================================================
+ * TYPE SYSTEM
+ * ============================================================================
+ * Spec: headlines in Söhne Bold/Buch, body copy in Söhne Buch or Inter
+ * Regular, numbers/data/UI in Inter.
+ *
+ * Söhne is a paid commercial typeface (Klim Type Foundry) — there is no free
+ * or legal source to pull it from, unlike Inter (Google Fonts, SIL Open Font
+ * License), so it can't be wired in here yet. Inter is fully live for body
+ * copy and numbers/data/UI, exactly per spec (Inter is the spec's own listed
+ * option for body, not a substitute). Headlines use Inter as a temporary
+ * fallback until real Söhne files exist — every heading site-wide reads the
+ * `--font-headline` token (see globals.css), so dropping Söhne in later is a
+ * two-file change, not a hunt through every component.
+ *
+ * TO ADD REAL SÖHNE ONCE YOU HAVE A LICENCE + FONT FILES:
+ *   1. Create src/fonts/sohne/ and drop in the .woff2 files, e.g.
+ *      Sohne-Buch.woff2 (weight 400) and Sohne-Kraftig.woff2 (weight 700).
+ *   2. Add, below, alongside `inter`:
+ *        import localFont from "next/font/local";
+ *        const sohne = localFont({
+ *          variable: "--font-sohne",
+ *          src: [
+ *            { path: "../fonts/sohne/Sohne-Buch.woff2", weight: "400", style: "normal" },
+ *            { path: "../fonts/sohne/Sohne-Kraftig.woff2", weight: "700", style: "normal" },
+ *          ],
+ *        });
+ *      and add `${sohne.variable}` to the <html> className below.
+ *   3. In globals.css, change `--font-headline` (and `--font-body`, if you
+ *      want Söhne there too) to `var(--font-sohne), var(--font-inter), ...`.
+ */
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
@@ -91,7 +117,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang={siteConfig.lang}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${inter.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-background text-on-background">
         <JsonLd data={[organizationSchema(), websiteSchema()]} />

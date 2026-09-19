@@ -1,5 +1,4 @@
 import { LogoLockup } from "@/components/layout/Logo";
-import { ClientsMosaic } from "@/components/sections/ClientsMosaic";
 import { Hero } from "@/components/sections/Hero";
 import { IndustriesShowcase } from "@/components/sections/IndustriesShowcase";
 import { LiveNetworkSection } from "@/components/sections/LiveNetworkMap";
@@ -199,9 +198,6 @@ export default function HomePage() {
 
       {/* --- Industries ------------------------------------------------------- */}
       <IndustriesShowcase />
-
-      {/* --- Clients ------------------------------------------------------------ */}
-      <ClientsMosaic />
 
       {/* --- What's coming -------------------------------------------------- */}
       <Section tone="surface">
