@@ -11,6 +11,8 @@
  * the footer and `sitemap.ts` all read from this single list.
  */
 
+import { getSiteUrl } from "@/lib/site-url";
+
 export type NavItem = {
   /** Text shown in the navbar. */
   label: string;
@@ -42,9 +44,13 @@ export const siteConfig = {
   /**
    * Canonical origin, no trailing slash. Drives canonical URLs, Open Graph
    * URLs, the sitemap and robots.txt. Override per-environment with
-   * NEXT_PUBLIC_SITE_URL (see `.env.example`).
+   * NEXT_PUBLIC_SITE_URL (see `.env.example`). Resolution — including the
+   * dev/production/Vercel-preview fallbacks and validation that guards
+   * against a set-but-blank environment variable — lives in one place:
+   * `src/lib/site-url.ts`. Don't read `process.env.NEXT_PUBLIC_SITE_URL`
+   * anywhere else; go through `siteConfig.url`.
    */
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.dot-logistics.com",
+  url: getSiteUrl(),
 
   locale: "en_US",
   /** BCP-47 tag written to <html lang>. */

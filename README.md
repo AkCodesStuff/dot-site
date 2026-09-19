@@ -4,10 +4,13 @@ Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · token-driven theming
 
 ```bash
 npm install
-cp .env.example .env.local   # then set NEXT_PUBLIC_SITE_URL
-npm run dev                  # http://localhost:3000
+npm run dev                  # http://localhost:3000 — no .env needed to start
 npm run build && npm start
 ```
+
+`NEXT_PUBLIC_SITE_URL` (see `.env.example`) is optional: unset, it resolves
+automatically per environment — see [Site URL](#site-url) below. Set it when
+you want to pin the real production domain.
 
 ---
 
@@ -139,8 +142,26 @@ Structured data already in place: `Organization` + `WebSite` sitewide,
 tracking, and `JobPosting` per role on careers.
 
 **Still to do before launch:** drop a 1200×630 `og-image.png` into `public/`,
-set `NEXT_PUBLIC_SITE_URL`, and uncomment the `verification` block in
-`src/app/layout.tsx` once you have Search Console tokens.
+set `NEXT_PUBLIC_SITE_URL` to the real production domain, and uncomment the
+`verification` block in `src/app/layout.tsx` once you have Search Console
+tokens.
+
+### Site URL
+
+Every absolute URL in the app — `metadataBase`, canonical links, Open Graph
+and Twitter metadata, JSON-LD, `sitemap.xml`, `robots.txt` — is built from
+`siteConfig.url`, which is resolved once, in one place:
+[`src/lib/site-url.ts`](src/lib/site-url.ts). Nothing else reads
+`NEXT_PUBLIC_SITE_URL` directly.
+
+Resolution order: an explicit `NEXT_PUBLIC_SITE_URL` (validated — a value
+that's set but blank or malformed is treated as absent, not used), then
+Vercel's own per-deployment `VERCEL_URL` (so previews get a correct origin
+automatically), then `http://localhost:<port>` outside production, then a
+hard-coded production domain as a last resort. This is why the app runs with
+no `.env` file at all — and why it's safe: `??`/`||` alone can't tell a blank
+environment variable from a missing one, and `new URL("")` throws, which is
+exactly the bug this module exists to make structurally impossible.
 
 ---
 
