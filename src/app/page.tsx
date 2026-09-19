@@ -4,6 +4,7 @@ import { LiveNetworkSection } from "@/components/sections/LiveNetworkMap";
 import { NotifyForm } from "@/components/sections/NotifyForm";
 import type { Solution } from "@/components/sections/SolutionsShowcase";
 import { SolutionsShowcase } from "@/components/sections/SolutionsShowcase";
+import { StatsStrip } from "@/components/sections/StatsStrip";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
@@ -190,6 +191,9 @@ export default function HomePage() {
         description="Real-time visibility across every lane, keeping your business ahead."
         cta={{ label: "Explore our network", href: "/technology" }}
       />
+
+      {/* --- Fleet stats ------------------------------------------------------ */}
+      <StatsStrip />
 
       {/* --- What's coming -------------------------------------------------- */}
       <Section tone="surface">
