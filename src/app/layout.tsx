@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
  * through `createMetadata()` in `src/lib/seo.ts`.
  */
 export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
+
   title: {
     default: `${siteConfig.name} — ${siteConfig.tagline}`,
     template: `%s | ${siteConfig.shortName}`,

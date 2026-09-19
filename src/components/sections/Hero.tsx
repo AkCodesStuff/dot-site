@@ -49,13 +49,24 @@ export function Hero({
 
   const content = (
     <Container className="relative z-10">
-      <div className="max-w-3xl py-24 sm:py-28 lg:py-32">
+      <div className="max-w-3xl py-24 sm:py-28 lg:py-32 relative">
+        <div className="absolute inset-0 pointer-events-none">
+  <div
+    className="absolute
+
+          top-1/2 -translate-y-1/2
+           w-[90%] h-[55%]
+           rounded-full
+           bg-white/70
+           blur-3xl"
+  ></div>
+</div>
         {lockup ? <div className="mb-8 sm:mb-10">{lockup}</div> : null}
 
         {eyebrow ? (
           <p
             className={cn(
-              "mb-4 text-sm font-semibold uppercase tracking-[0.2em]",
+              "mb-4 text-sm font-semibold relative z-10 uppercase tracking-[0.2em]",
               overVideo ? "text-accent" : "text-secondary",
             )}
           >
@@ -65,7 +76,7 @@ export function Hero({
 
         <h1
           className={cn(
-            "text-balance uppercase font-black leading-[0.95] tracking-tight",
+            "text-balance uppercase relative z-10  font-black leading-[0.95] tracking-tight",
             "text-5xl sm:text-6xl md:text-7xl lg:text-8xl",
           )}
         >
@@ -74,14 +85,14 @@ export function Hero({
 
         <p
           className={cn(
-            "mt-6 max-w-xl text-lg font-medium leading-relaxed text-pretty sm:text-xl lg:text-2xl",
+            "mt-6 max-w-xl text-lg font-medium relative z-10  leading-relaxed text-pretty sm:text-xl lg:text-2xl",
             overVideo ? "text-on-overlay/80" : "text-secondary",
           )}
         >
           {description}
         </p>
 
-        <div className="mt-9 flex flex-wrap gap-3">
+        {/* <div className="mt-9 flex flex-wrap gap-3">
           <ButtonLink href={primaryCta.href} variant="accent" size="lg">
             {primaryCta.label}
           </ButtonLink>
@@ -94,9 +105,9 @@ export function Hero({
               {secondaryCta.label}
             </ButtonLink>
           ) : null}
-        </div>
+        </div> */}
 
-        {children ? <div className="mt-10">{children}</div> : null}
+    
       </div>
     </Container>
   );
@@ -116,7 +127,7 @@ export function Hero({
   }
 
   return (
-    <section className="relative flex min-h-svh flex-col justify-center overflow-hidden border-b border-border bg-surface text-on-surface">
+    <section className="relative flex h-screen flex-col justify-center overflow-hidden border-b border-border bg-surface text-on-surface">
       {/* Backdrop photo — a road and sky scene, replaced by the video once it
           is configured. `fill` + `sizes="100vw"` lets it scale continuously
           with the viewport instead of snapping between fixed sizes. */}
@@ -136,16 +147,16 @@ export function Hero({
       <div
         aria-hidden="true"
         className={cn(
-          "absolute bottom-0 right-2 aspect-[4/3] w-[46vw] max-w-[420px] sm:right-8 sm:w-[36vw]",
-          "md:w-[30vw] lg:right-16 lg:w-[24vw]",
-          "transition-transform duration-300 lg:hover:-translate-y-4",
+          "absolute bottom-0 -right-50 aspect-[4/3] w-[90vw]  md:w-[30vw]   md:right-16 ",
+          "",
+          
         )}
       >
         <Image
           src="https://res.cloudinary.com/js6wkdfq/image/upload/e_background_removal/v1789797069/truck-dot-2.png"
           alt=""
           fill
-          sizes="(min-width: 1024px) 24vw, (min-width: 640px) 36vw, 46vw"
+       
           className="pointer-events-none object-contain object-bottom"
           priority
         />
