@@ -1,6 +1,8 @@
 import { LogoLockup } from "@/components/layout/Logo";
 import { Hero } from "@/components/sections/Hero";
 import { NotifyForm } from "@/components/sections/NotifyForm";
+import type { Solution } from "@/components/sections/SolutionsShowcase";
+import { SolutionsShowcase } from "@/components/sections/SolutionsShowcase";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { Badge } from "@/components/ui/Badge";
 import { ButtonLink } from "@/components/ui/Button";
@@ -63,6 +65,55 @@ const whatsComing = [
   },
 ];
 
+/**
+ * Placeholder photography from Unsplash (free licence, no attribution
+ * required) — swap for real DOT fleet/warehouse photography when it exists.
+ * Each arrow links into the contact page with a `solution` query param, the
+ * same pattern the careers page uses for its per-role "Apply" links.
+ */
+const solutions: Solution[] = [
+  {
+    name: "DOT Truckers",
+    subtitle: "FTL Transportation",
+    description:
+      "Reliable, asset-backed capacity for high-volume, long-haul and dedicated transportation needs.",
+    image:
+      "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=1200&auto=format&fit=crop&q=80",
+    icon: "truck",
+    href: "/contact?solution=truckers",
+  },
+  {
+    name: "DOT Supply Chain",
+    subtitle: "Asset-Light Logistics",
+    description:
+      "Flexible, scalable logistics built on a vetted carrier and fulfilment partner network.",
+    image:
+      "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=1200&auto=format&fit=crop&q=80",
+    icon: "boxes",
+    href: "/contact?solution=supply-chain",
+  },
+  {
+    name: "DOT Express",
+    subtitle: "Time-Critical Deliveries",
+    description:
+      "Faster deliveries for urgent shipments, with end-to-end visibility and priority handling.",
+    image:
+      "https://images.unsplash.com/photo-1580674285054-bed31e145f59?w=1200&auto=format&fit=crop&q=80",
+    icon: "bolt",
+    href: "/contact?solution=express",
+  },
+  {
+    name: "DOT Warehousing",
+    subtitle: "Storage & Fulfilment",
+    description:
+      "Strategically located, bonded warehousing for storage, pick-and-pack and fulfilment.",
+    image:
+      "https://images.unsplash.com/photo-1553413077-190dd305871c?w=1200&auto=format&fit=crop&q=80",
+    icon: "warehouse",
+    href: "/contact?solution=warehousing",
+  },
+];
+
 const unaffected = [
   {
     title: "Track a shipment",
@@ -118,6 +169,14 @@ export default function HomePage() {
           ))}
         </ul>
       </Hero>
+
+      {/* --- Solutions -------------------------------------------------------- */}
+      <SolutionsShowcase
+        eyebrow="Our solutions"
+        title="End-to-end logistics, built around your business."
+        description="From full truckload to express deliveries, and warehousing to last-mile — DOT covers the full range of logistics, built around what your business actually needs."
+        solutions={solutions}
+      />
 
       {/* --- What's coming -------------------------------------------------- */}
       <Section tone="surface">
