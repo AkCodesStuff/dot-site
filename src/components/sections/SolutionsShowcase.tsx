@@ -55,7 +55,7 @@ export function SolutionsShowcase({
   solutions: Solution[];
 }) {
   return (
-    <section className="border-b border-border bg-background text-on-background">
+    <section className="border-b border-border bg-background text-on-background mb-10">
       {/* Phone / tablet-portrait heading — normal document flow, not pinned
           (the pinned stage below is `hidden` under `md`). */}
       <Container className="pb-10 pt-16 sm:pb-12 sm:pt-20 md:hidden">
@@ -127,14 +127,7 @@ function SolutionsHeading({
           className="mt-3 block h-1 w-14 rounded-full bg-accent"
         />
       </div>
-      <p
-        className={cn(
-          "max-w-md leading-relaxed text-on-muted",
-          compact ? "text-sm lg:text-base" : "text-base lg:text-lg",
-        )}
-      >
-        {description}
-      </p>
+      
     </div>
   );
 }
@@ -257,13 +250,13 @@ function SolutionCard({ solution }: { solution: Solution }) {
         // remaining space under the heading in the pinned stage, or the
         // fixed 65vh strip used for the prefers-reduced-motion fallback —
         // the card doesn't need to know which.
-        "flex h-full shrink-0 flex-col overflow-hidden rounded-3xl border border-border bg-surface-raised text-on-surface-raised",
+        "flex h-full shrink-0 flex-col overflow-hidden  rounded-3xl border border-border bg-surface-raised text-on-surface-raised",
         // Wide enough that the row still overhangs the viewport by a real
         // distance even once the shorter height narrows the row's total
         // content width along with it -- narrower cards here nearly
         // eliminate the horizontal scroll travel on common desktop widths,
         // which makes the pan too subtle to read as motion.
-        "md:w-[46vw] lg:w-[34vw] xl:w-[28vw]",
+        "md:w-[46vw] lg:w-[34vw] xl:w-[28vw] ",
       )}
     >
       <div className="relative min-h-0 w-full flex-1 overflow-hidden">
@@ -297,13 +290,7 @@ function SolutionCard({ solution }: { solution: Solution }) {
           {solution.description}
         </p>
 
-        <Link
-          href={solution.href}
-          aria-label={`Talk to us about ${solution.name}`}
-          className="mt-0.5 inline-flex h-9 w-9 items-center justify-center self-start rounded-full border border-border text-on-surface-raised transition-colors hover:border-secondary hover:text-secondary"
-        >
-          <ArrowIcon className="h-4 w-4" />
-        </Link>
+  
       </div>
     </article>
   );
@@ -315,7 +302,7 @@ function SolutionTile({ solution }: { solution: Solution }) {
     <Link
       href={solution.href}
       aria-label={`Talk to us about ${solution.name}`}
-      className="group relative aspect-[3/4] overflow-hidden rounded-2xl"
+      className="group relative aspect-[3/4] overflow-hidden rounded-2xl "
     >
       <Image
         src={solution.image}
