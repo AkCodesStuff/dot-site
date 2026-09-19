@@ -1,5 +1,6 @@
 import { LogoLockup } from "@/components/layout/Logo";
 import { Hero } from "@/components/sections/Hero";
+import { FacilitiesStats } from "@/components/sections/FacilitiesStats";
 import { IndustriesShowcase } from "@/components/sections/IndustriesShowcase";
 import { LiveNetworkSection } from "@/components/sections/LiveNetworkMap";
 import { NotifyForm } from "@/components/sections/NotifyForm";
@@ -199,8 +200,11 @@ export default function HomePage() {
       {/* --- Industries ------------------------------------------------------- */}
       <IndustriesShowcase />
 
+      {/* --- Facilities --------------------------------------------------------- */}
+      <FacilitiesStats />
+
       {/* --- What's coming -------------------------------------------------- */}
-      <Section tone="surface">
+      {/* <Section tone="surface">
         <SectionHeading
           eyebrow="What's coming"
           title="Four things the upgrade changes"
@@ -215,10 +219,10 @@ export default function HomePage() {
             </Card>
           ))}
         </div>
-      </Section>
+      </Section> */}
 
       {/* --- Business as usual ---------------------------------------------- */}
-      <Section>
+      {/* <Section>
         <SectionHeading
           eyebrow="Meanwhile"
           title="Everything you use today still works"
@@ -248,7 +252,7 @@ export default function HomePage() {
             </div>
           ))}
         </div>
-      </Section>
+      </Section> */}
 
       {/* --- Notify ---------------------------------------------------------- */}
       <Section tone="secondary">
