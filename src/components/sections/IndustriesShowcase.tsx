@@ -170,28 +170,27 @@ export function IndustriesShowcase() {
             <IndustriesHeading compact />
           </Container>
 
-          {/* `min-h-0 flex-1` gives this whatever the heading leaves behind;
-              the row sits a fixed distance below the heading rather than
-              being vertically centred in that space, which on anything but
-              a very short viewport left a huge, viewport-size-dependent gap
-              above the row (and another below it) that read as accidental
-              rather than designed. Any leftover room now falls below the
-              row instead, which is the ordinary, expected way a section
-              ends. */}
-          <div className="min-h-0 flex-1 overflow-hidden">
-            <Container className="w-full">
+          {/* `min-h-0 flex-1` gives this whatever the heading leaves behind.
+              The row (and every card in it) is `h-full`, so it fills that
+              space exactly -- images grow or shrink with it -- instead of
+              sitting at a fixed natural height and leaving a leftover void
+              below on anything but one specific viewport height. `pt-8` is
+              the fixed, deliberate gap below the heading. */}
+          <div className="min-h-0 flex-1 overflow-hidden pt-8 lg:pt-10">
+            <Container className="h-full w-full">
               {/* Group A sits in normal flow and sets the box's height (both
                   groups share the same card shape, so this height is correct
                   for either); group B is absolutely stacked on top of it, so
                   the two crossfade in the same spot rather than one pushing
                   the other down the page. */}
-              <div className="relative mt-8 lg:mt-10">
-                <div ref={rowARef} className="grid grid-cols-3 gap-6 opacity-100">
+              <div className="relative h-full">
+                <div ref={rowARef} className="grid h-full grid-cols-3 gap-6 opacity-100">
                   {GROUP_A.map((industry, index) => (
                     <IndustryCard
                       key={industry.name}
                       industry={industry}
                       imageFirst={index % 2 === 0}
+                      fill
                     />
                   ))}
                 </div>
@@ -201,6 +200,7 @@ export function IndustriesShowcase() {
                       key={industry.name}
                       industry={industry}
                       imageFirst={index % 2 !== 0}
+                      fill
                     />
                   ))}
                 </div>
@@ -254,24 +254,39 @@ function IndustriesHeading({ compact = false }: { compact?: boolean }) {
 function IndustryCard({
   industry,
   imageFirst,
+  fill = false,
 }: {
   industry: Industry;
   imageFirst: boolean;
+  /** Desktop pinned grid: stretch to fill the row's full height instead of
+   *  a fixed aspect ratio, so the cards use the space the layout gives them
+   *  rather than leaving a gap below at most viewport heights. Off (the
+   *  fixed-aspect default) for the mobile list, which has no meaningful
+   *  "available height" to fill in normal document flow. */
+  fill?: boolean;
 }) {
   const image = (
-    <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl">
+    <div
+      className={cn(
+        "relative w-full overflow-hidden rounded-2xl",
+        fill ? "min-h-0 flex-1" : "aspect-4/3 shrink-0",
+      )}
+    >
       <Image
         src={industry.image}
         alt=""
         fill
         sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-        className="object-cover"
+        // Grayscale ties together photos pulled from different sources under
+        // one consistent, on-brand look -- this palette has no room for
+        // whatever colour cast a given stock photo happens to carry.
+        className="object-cover grayscale contrast-110"
       />
     </div>
   );
 
   const text = (
-    <div className="flex min-h-42 flex-col justify-center lg:min-h-46">
+    <div className="flex min-h-42 shrink-0 flex-col justify-center lg:min-h-46">
       <span
         aria-hidden="true"
         className="grid h-10 w-10 place-items-center rounded-full bg-muted text-on-surface"
@@ -289,7 +304,7 @@ function IndustryCard({
   );
 
   return (
-    <article className="flex flex-col gap-4">
+    <article className={cn("flex flex-col gap-4", fill && "h-full")}>
       {imageFirst ? (
         <>
           {image}
