@@ -100,17 +100,12 @@ export default function HomePage() {
 
       <Hero
         lockup={<LogoLockup />}
-        eyebrow="We're upgrading"
         title={
           <>
-            We&rsquo;re building the next chapter of{" "}
-            <span className="whitespace-nowrap">
-              {siteConfig.shortName}
-              <span className="text-accent">.</span>
-            </span>
+            We&rsquo;re <span className="text-accent">Upgrading.</span>
           </>
         }
-        description="A smarter, more connected logistics network — one operating model across road, rail, air and sea, with tracking and customs built into the same platform. Your freight keeps moving while we build it."
+        description="We're building the next chapter of DOT. A smarter, more connected logistics network — built to move businesses forward."
         primaryCta={{ label: "Track a shipment", href: "/tracking" }}
         secondaryCta={{ label: "Talk to us", href: "/contact" }}
       >
