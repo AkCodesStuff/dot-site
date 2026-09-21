@@ -49,6 +49,8 @@ export const SEQUENCE = {
     bandIn: 0.8,
     /** Band lifts away, revealing the truck parked where it started. */
     bandOut: 0.8,
+    /** Lamps strike and the beams reach out into the dark. */
+    night: 0.6,
     /** Closing headline, subtext and CTA fade in beside the truck. */
     ending: 0.8,
     /** Breathing room before the pin releases. */
@@ -76,10 +78,10 @@ export const SEQUENCE = {
   lane: {
     /** Lane offset from centre, as a fraction of stage width. */
     offset: 0.19,
-    offsetMobile: 0.1,
+    offsetMobile: 0.17,
     /** Yaw into the turn, in degrees, straightened out by the end of the move. */
     tilt: 8,
-    tiltMobile: 6,
+    tiltMobile: 8,
     /** Share of the beat spent crossing; the rest is straight running. */
     moveShare: 0.4,
     ease: "power2.inOut",
@@ -150,10 +152,40 @@ export const SEQUENCE = {
    * `travel`: how many screens of scrolling it takes to cross the stage.
    */
   obstacles: [
-    { kind: "cone", lane: 0, phase: "beat1", at: 0.85, travel: 1.5 },
+   
     { kind: "barrier", lane: 1, phase: "beat2", at: 0.88, travel: 1.5 },
-    { kind: "cone", lane: 0, phase: "beat3", at: 0.5, travel: 1.15 },
+    // { kind: "cone", lane: 0, phase: "beat3", at: 0.5, travel: 1.15 },
   ],
+
+  /**
+   * The night ending. The stage goes black while the services band is covering
+   * it, so when the band lifts the truck appears to have come out of a tunnel
+   * into the dark — then its lights come on.
+   *
+   * ALL lamp and beam geometry is a percentage of the truck's own square box,
+   * which is what you tune to line the beams up with the artwork. Because the
+   * box is smaller on mobile, mobile gets proportionally narrower and shorter
+   * beams for free — add explicit mobile values only if you want a different
+   * beam *shape* there rather than a scaled one.
+   */
+  night: {
+    /** Share of the frames phase spent fading the stage to black. */
+    darkenShare: 0.6,
+    /** Windows within the night phase, as fractions of it. */
+    flicker: [0, 0.4],
+    beams: [0.3, 0.9],
+    /** Opacity the bulbs jump between as they strike. Stepped, not eased. */
+    flickerSteps: [0, 1, 0.3, 1],
+    /** Headlamps: offset from the box centre, down from its nose, and size. */
+    lamp: { inset: 7.5, top: 5, size: 6, glow: 14 },
+    /** Tail lamps: same units, measured up from the box's tail. */
+    tail: { inset: 6, bottom: 5, size: 4, glow: 10, opacity: 0.55 },
+    /** Beam trapezoid: width at the lamp, width at the throw, and length. */
+    beam: { near: 8, far: 46, length: 130 },
+    /** Static blur radius, px. Never animated. */
+    beamBlur: 11,
+    ease: "power2.out",
+  },
 
   intro: {
     /** Seconds for one line-art truck to cross the intro panel. Ambient, not scrubbed. */
@@ -172,6 +204,7 @@ const ORDER: Phase[] = [
   "bandIn",
   "frames",
   "bandOut",
+  "night",
   "ending",
   "outro",
 ];

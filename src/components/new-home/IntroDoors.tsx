@@ -155,7 +155,7 @@ export function IntroDoors() {
     >
       <div
         ref={leftRef}
-        className="pointer-events-auto absolute inset-y-0 left-0 w-1/2 overflow-hidden border-r border-accent/25 bg-background text-on-background"
+        className="pointer-events-auto absolute inset-y-0 left-0 w-1/2 overflow-hidden bg-background text-on-background"
       >
         {/* A full-viewport-width copy of the panel, anchored to the seam. */}
         <div className="absolute inset-y-0 left-0 w-[200%]">
@@ -165,7 +165,7 @@ export function IntroDoors() {
 
       <div
         ref={rightRef}
-        className="pointer-events-auto absolute inset-y-0 right-0 w-1/2 overflow-hidden border-l border-accent/25 bg-background text-on-background"
+        className="pointer-events-auto absolute inset-y-0 right-0 w-1/2 overflow-hidden  bg-background text-on-background"
       >
         {/* The mirror copy. Hidden from screen readers so the panel's one line
             of copy is not announced twice. */}

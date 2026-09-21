@@ -95,6 +95,16 @@
   --info: var(--dot-grey);
   --on-info: var(--dot-white);
 
+  /* --- Light sources ------------------------------------------------------
+     The only two hues in this project that are NOT from the brand palette,
+     and the rule above is suspended for exactly these two. They are not
+     surfaces, text or brand: they are lamps, in the night ending of the
+     /new-home truck sequence. A headlight that is DOT Yellow reads as an
+     indicator, and a tail lamp has to be red to read as a tail lamp at all.
+     Nothing outside `.night-*` below may use them. */
+  --headlight: #fff3d6;
+  --taillight: #e0403a;
+
   /* --- Media overlay ----------------------------------------------------- */
   /* Scrim laid over the hero video so foreground copy stays readable. Black,
      used at partial opacity, so footage still reads through it. */
@@ -243,6 +253,86 @@
    cascade) automatically wins over that attribute regardless. */
 .network-line {
   stroke: var(--accent);
+}
+
+/* ============================================================================
+   NIGHT ENDING — the headlights on the /new-home truck sequence.
+   ----------------------------------------------------------------------------
+   Every dimension here arrives as a custom property from
+   `components/new-home/config.ts`, as a PERCENTAGE of the truck's own square
+   box. That is deliberate: the beams have to line up with a raster truck by
+   eye, and percentages keep that alignment when the truck changes size
+   between breakpoints instead of needing a second set of numbers.
+
+   The lamps start dark. `.night-lit` is the no-JavaScript / reduced-motion
+   state that simply switches them on; otherwise the timeline animates
+   `opacity` and `scaleY` and nothing else. `filter` is set once and never
+   animated — blur is ruinously expensive to tween.
+   ========================================================================== */
+.night-beam {
+  position: absolute;
+  bottom: var(--beam-bottom);
+  /* Centred on its lamp: half the far width back from the lamp's offset. */
+  left: calc(50% + var(--beam-inset) - var(--beam-far) / 2);
+  width: var(--beam-far);
+  height: var(--beam-length);
+  opacity: 0;
+  /* Grows out of the truck, not out of thin air. */
+  transform-origin: bottom center;
+  /* Trapezoid: pinched to `--beam-near` at the lamp, full width at the throw. */
+  clip-path: polygon(
+    calc(50% - var(--beam-near) / 2) 100%,
+    calc(50% + var(--beam-near) / 2) 100%,
+    100% 0,
+    0 0
+  );
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--headlight) 60%, transparent),
+    transparent
+  );
+  filter: blur(var(--beam-blur));
+  /* Makes the two beams brighten where they cross. */
+  mix-blend-mode: screen;
+}
+
+.night-bulb,
+.night-tail {
+  position: absolute;
+  left: calc(50% + var(--lamp-inset) - var(--lamp-w) / 2);
+  width: var(--lamp-w);
+  height: var(--lamp-w);
+  border-radius: 9999px;
+  opacity: 0;
+}
+
+.night-bulb {
+  --lamp-w: var(--lamp-size);
+  top: var(--lamp-top);
+  background: var(--headlight);
+  box-shadow: 0 0 var(--lamp-glow)
+    color-mix(in srgb, var(--headlight) 70%, transparent);
+}
+
+.night-tail {
+  --lamp-w: var(--tail-size);
+  bottom: var(--tail-bottom);
+  background: var(--taillight);
+  box-shadow: 0 0 var(--tail-glow)
+    color-mix(in srgb, var(--taillight) 55%, transparent);
+}
+
+.night-lit .night-beam {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.night-lit .night-bulb {
+  opacity: 1;
+}
+
+.night-lit .night-tail {
+  opacity: var(--tail-opacity);
 }
 
 /* City labels sit directly on the tile imagery, whose brightness varies, so

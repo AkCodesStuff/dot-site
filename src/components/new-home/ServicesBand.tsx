@@ -58,7 +58,7 @@ export function ServicesBand() {
       // `translate-*` class: Tailwind v4 writes those to the `translate`
       // property, which composes with (rather than being replaced by) the
       // `transform` GSAP writes, and the band would end up double-offset.
-      className="invisible absolute inset-x-0 top-0 z-30 bg-secondary text-on-secondary"
+      className="invisible absolute inset-x-0 top-0 z-30 bg-primary text-on-primary"
       style={{ height: `${BAND_HEIGHT_VH}vh`, clipPath: BAND_CLIP_PATH }}
     >
       <p className="absolute inset-x-0 top-1/2 translate-y-[-38vh] text-center font-ui text-xs font-semibold uppercase tracking-[0.2em] text-on-secondary/50">

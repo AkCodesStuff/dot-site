@@ -143,7 +143,7 @@ export function TruckSequence() {
 
         const plan = buildTimeline(isWide, SERVICES.length);
         const { start, duration } = plan;
-        const { copy, band } = SEQUENCE;
+        const { copy, band, night } = SEQUENCE;
         const width = () => stage.clientWidth;
         const height = () => stage.clientHeight;
         const vh = (value: number) => () => (height() * value) / 100;
@@ -327,6 +327,52 @@ export function TruckSequence() {
           start.bandOut,
         );
 
+        // --- Night falls while the band is covering the stage ----------------
+        // Done as an opacity tween on a black layer rather than a
+        // `backgroundColor` tween: it keeps the animation to opacity alone, and
+        // keeps the colour itself a palette token in the markup instead of a
+        // hex literal in here (see the rules at the top of `globals.css`).
+        tl.to(
+          "[data-night]",
+          {
+            opacity: 1,
+            duration: duration.frames * night.darkenShare,
+          },
+          start.frames,
+        );
+
+        // --- Switch-on: the lamps strike, then the beams reach out -----------
+        const flickerAt = start.night + duration.night * night.flicker[0];
+        const flickerFor =
+          duration.night * (night.flicker[1] - night.flicker[0]);
+
+        tl.to(
+          "[data-bulb]",
+          {
+            // Stepped, so it jumps between values like a striking lamp instead
+            // of cross-fading through them.
+            keyframes: { opacity: [...night.flickerSteps], ease: "steps(1)" },
+            duration: flickerFor,
+          },
+          flickerAt,
+        ).to(
+          "[data-tail]",
+          { opacity: night.tail.opacity, duration: flickerFor },
+          flickerAt,
+        );
+
+        tl.fromTo(
+          "[data-beam]",
+          { scaleY: 0, opacity: 0 },
+          {
+            scaleY: 1,
+            opacity: 1,
+            duration: duration.night * (night.beams[1] - night.beams[0]),
+            ease: night.ease,
+          },
+          start.night + duration.night * night.beams[0],
+        );
+
         // --- Ending: closing copy and the CTA arrive beside the truck --------
         blockIn(
           tl,
@@ -378,6 +424,14 @@ export function TruckSequence() {
           } as CSSProperties
         }
       >
+        {/* Nightfall. Sits under the truck and the copy, over the stage's own
+            light background, and is faded up while the band hides the stage. */}
+        <div
+          data-night
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-primary opacity-0"
+        />
+
         {SEQUENCE.obstacles.map((obstacle, index) => (
           <Centred key={index}>
             {/* `opacity-0` only covers the gap before GSAP parks these above
@@ -390,8 +444,12 @@ export function TruckSequence() {
 
         <Centred className="z-10">
           <div data-truck-lane>
-            <div data-truck-body>
+            {/* `relative` so the lamps can be placed against the truck's own
+                box. They are inside this wrapper, so they inherit every drift,
+                lane change and tilt for free. */}
+            <div data-truck-body className="relative">
               <Truck />
+              <Headlights />
             </div>
           </div>
         </Centred>
@@ -409,7 +467,7 @@ export function TruckSequence() {
           </div>
         </div>
 
-        <div className="absolute bottom-[9%] left-5 right-5 z-20 md:bottom-auto md:left-[6vw] md:right-auto md:top-1/2 md:max-w-[24ch] md:-translate-y-1/2">
+        <div className="absolute   left-5 right-5 z-20 bottom-1/2 translate-y-1/2 md:bottom-auto md:left-[6vw] md:right-auto md:top-1/2 md:max-w-[24ch] md:-translate-y-1/2">
           <div data-block="stats" className="invisible opacity-0">
             <StatList animated />
           </div>
@@ -565,6 +623,78 @@ function Truck() {
   );
 }
 
+/** Left lamp, right lamp. */
+const SIDES = [-1, 1];
+
+/**
+ * Beams, headlamps and tail lamps laid over the truck's own box, so they ride
+ * along with it. The truck artwork itself is untouched.
+ *
+ * Geometry is percentages of that box and comes from the config, because
+ * lining beams up with a raster truck is done by eye. The visual side —
+ * trapezoid, gradient, blur, blend mode — lives in `globals.css`, which is
+ * also where the two non-palette light colours are declared.
+ *
+ * The truck is flipped to face up, so its nose is at the TOP of the box and
+ * the beams throw upward from there.
+ *
+ * `lit` is the static switched-on state used by the reduced-motion layout.
+ * Otherwise the timeline drives `[data-beam]`, `[data-bulb]` and `[data-tail]`
+ * with nothing but opacity and `scaleY`.
+ */
+function Headlights({ lit = false }: { lit?: boolean }) {
+  const { lamp, tail, beam, beamBlur } = SEQUENCE.night;
+
+  return (
+    <div
+      aria-hidden="true"
+      className={cn("pointer-events-none absolute inset-0", lit && "night-lit")}
+      style={
+        {
+          "--beam-near": `${beam.near}%`,
+          "--beam-far": `${beam.far}%`,
+          "--beam-length": `${beam.length}%`,
+          "--beam-bottom": `${100 - lamp.top}%`,
+          "--beam-blur": `${beamBlur}px`,
+        
+          "--lamp-top": `${lamp.top}%`,
+          "--lamp-glow": `${lamp.glow}px`,
+          "--tail-size": `${tail.size}%`,
+          "--tail-bottom": `${tail.bottom}%`,
+          "--tail-glow": `${tail.glow}px`,
+          // A string, so it cannot be mistaken for a length and get `px`.
+          "--tail-opacity": `${tail.opacity}`,
+        } as CSSProperties
+      }
+    >
+      {SIDES.map((side) => (
+        <div
+          key={`beam${side}`}
+          data-beam
+          className="night-beam"
+          style={{ "--beam-inset": `${side * lamp.inset}%` } as CSSProperties}
+        />
+      ))}
+      {SIDES.map((side) => (
+        <div
+          key={`bulb${side}`}
+          data-bulb
+          className="night-bulb"
+          style={{ "--lamp-inset": `${side * lamp.inset}%` } as CSSProperties}
+        />
+      ))}
+      {SIDES.map((side) => (
+        <div
+          key={`tail${side}`}
+          data-tail
+          className="night-tail"
+          style={{ "--lamp-inset": `${side * tail.inset}%` } as CSSProperties}
+        />
+      ))}
+    </div>
+  );
+}
+
 function Obstacle({ kind }: { kind: "cone" | "barrier" }) {
   return kind === "cone" ? (
     <TrafficCone className="h-11 w-11 text-accent" />
@@ -586,18 +716,22 @@ function MissionTitle() {
   );
 }
 
+/**
+ * Only ever seen against the night stage, so its colours are the `on-primary`
+ * pair rather than the stage's own light-theme text tokens.
+ */
 function EndingBlock() {
   return (
     <div>
       <h2
         className={cn(
           DISPLAY_HEADING,
-          "text-3xl sm:text-4xl md:text-6xl lg:text-7xl",
+          "text-3xl text-on-primary sm:text-4xl md:text-6xl lg:text-7xl",
         )}
       >
         {ENDING.title}
       </h2>
-      <p className="mt-4 text-base leading-relaxed text-on-muted md:text-lg">
+      <p className="mt-4 text-base leading-relaxed text-on-primary/70 md:text-lg">
         {ENDING.body}
       </p>
       <ButtonLink
@@ -614,7 +748,7 @@ function EndingBlock() {
 
 function MissionBody() {
   return (
-    <p className="text-base leading-relaxed text-on-muted md:text-lg">
+    <p className="text-sm text-right md:text-left md:leading-relaxed text-on-muted md:text-lg">
       {MISSION.body}
     </p>
   );
@@ -626,7 +760,7 @@ function MissionBody() {
  */
 function StatList({ animated = false }: { animated?: boolean }) {
   return (
-    <dl className="grid grid-cols-3 gap-4 md:grid-cols-1 md:gap-8">
+    <dl className="grid gap-4 grid-cols-1 md:gap-8">
       {STATS.map((stat) => (
         <div key={stat.label}>
           <dd className="font-ui text-3xl font-bold tracking-tight tabular-nums sm:text-4xl lg:text-5xl">
@@ -663,45 +797,62 @@ function InfoBlock() {
 
 /**
  * Reduced motion: the whole sequence stacked and still. No pin, no scrub, no
- * band and no obstacles — the truck sits between the copy it belongs to, the
- * services are a plain list, and the ending is simply there.
+ * band and no obstacles.
+ *
+ * It keeps the story's arc — the daylight beats, then night — as two plain
+ * sections, because the animated version's ending is only legible on black.
+ * The truck lives in the night half so there is still exactly one of them, and
+ * its lamps are simply switched on rather than flickered.
  */
 function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
   return (
-    <section ref={ref} className="relative z-0 bg-surface text-on-surface">
-      <Container className="py-20 lg:py-28">
-        <div className="max-w-2xl">
-          <MissionTitle />
-          <div className="mt-6">
-            <MissionBody />
+    <section ref={ref} className="relative z-0">
+      <div className="bg-surface text-on-surface">
+        <Container className="py-20 lg:py-28">
+          <div className="max-w-2xl">
+            <MissionTitle />
+            <div className=" mt-12 md:mt-6">
+              <MissionBody />
+            </div>
           </div>
-        </div>
 
-        <div className="my-14 flex justify-center">
-          <Image
-            src={TRUCK_SRC}
-            alt="A Dot Truckers long-haul truck seen from above"
-            width={500}
-            height={500}
-            priority
-            className="h-(--truck-h) w-(--truck-h) rotate-180"
-            style={{ "--truck-h": `${SEQUENCE.truck.height}px` } as CSSProperties}
-          />
-        </div>
+          <div className="mt-16 grid gap-14 md:grid-cols-2 md:items-center">
+            <StatList />
+            <InfoBlock />
+          </div>
 
-        <div className="grid gap-14 md:grid-cols-2 md:items-center">
-          <StatList />
-          <InfoBlock />
-        </div>
+          <div className="mt-20">
+            <ServicesList />
+          </div>
+        </Container>
+      </div>
 
-        <div className="mt-20">
-          <ServicesList />
-        </div>
+      <div className="bg-primary text-on-primary">
+        <Container className="py-20 lg:py-28">
+          <div className="flex justify-center">
+            <div
+              className="relative z-20"
+              style={
+                { "--truck-h": `${SEQUENCE.truck.height}px` } as CSSProperties
+              }
+            >
+              <Image
+                src={TRUCK_SRC}
+                alt="A Dot Truckers long-haul truck seen from above"
+                width={500}
+                height={500}
+                priority
+                className="h-(--truck-h) w-(--truck-h) rotate-180"
+              />
+              <Headlights lit />
+            </div>
+          </div>
 
-        <div className="mt-20 max-w-2xl">
-          <EndingBlock />
-        </div>
-      </Container>
+          <div className="mt-16 max-w-2xl">
+            <EndingBlock />
+          </div>
+        </Container>
+      </div>
     </section>
   );
 }
