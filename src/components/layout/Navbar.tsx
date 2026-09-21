@@ -13,6 +13,17 @@ import { cn } from "@/lib/utils";
 
 /** Scroll distance after which the bar tucks itself away. */
 const COLLAPSE_AFTER_PX = 80;
+/**
+ * `/new-home` opens behind a full-screen intro panel that covers this bar, so
+ * tucking away on the usual 80px would leave the bar already hidden by the
+ * time the doors part. There it holds until the intro has opened and the first
+ * stage screen has been read, then tucks away like anywhere else.
+ *
+ * Two viewport heights is that page's `doors` + `beat1` phases (see
+ * `new-home/config.ts`) — retune this if those phase budgets change.
+ */
+const INTRO_ROUTE = "/new-home";
+const INTRO_COLLAPSE_AFTER_VH = 2;
 /** Grace period before a hovered-open bar tucks away again (desktop). */
 const PEEK_CLOSE_DELAY_MS = 220;
 /** Movement before a press on the bar turns into a pull (mobile). */
@@ -46,7 +57,11 @@ const isDesktop = () => window.matchMedia(DESKTOP_QUERY).matches;
  */
 export function Navbar() {
   const pathname = usePathname();
-  const scrolled = useScrolledPast(COLLAPSE_AFTER_PX);
+  const scrolled = useScrolledPast(
+    pathname === INTRO_ROUTE
+      ? () => window.innerHeight * INTRO_COLLAPSE_AFTER_VH
+      : COLLAPSE_AFTER_PX,
+  );
 
   const [peeking, setPeeking] = useState(false);
   const [shadeOpen, setShadeOpen] = useState(false);
