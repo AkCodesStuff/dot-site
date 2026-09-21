@@ -3,16 +3,30 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
 import { useRef } from "react";
 
-import { LogoMark } from "@/components/layout/Logo";
+import { Wordmark } from "@/components/layout/Logo";
 import { SEQUENCE } from "@/components/new-home/config";
 import { ChevronDown, LineTruck } from "@/components/new-home/RoadArt";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
+import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
-const LINE = "We're upgrading. Something new is on the way.";
+/**
+ * Split across the seam: the lead rides the left door, the accented half the
+ * right. Sized in `vw` rather than at breakpoints because each half only ever
+ * gets 50vw to print in — a fixed ramp either overflows the narrow end or
+ * leaves the wide end looking timid.
+ */
+const HEADLINE = { lead: "We’re", accent: "Upgrading" };
+const HEADLINE_TYPE =
+  "font-headline text-[6vw] font-bold uppercase leading-none tracking-tight";
+
+/** The mark on its own. Black on transparency, so it needs a light panel. */
+const LOGO_SRC =
+  "https://res.cloudinary.com/js6wkdfq/image/upload/v1789822433/dot-logo-bg-2.png";
 
 /**
  * The ambient traffic along the panel's floor: how wide each truck is, how far
@@ -37,17 +51,17 @@ const TRAFFIC = [
  * Each half is 50vw wide with `overflow-hidden`, and each contains its own
  * full-viewport-width copy of the panel content, anchored to the seam. The two
  * copies line up pixel for pixel across the centre line, so the panel reads as
- * one surface — until the halves translate apart and each takes its half of
- * the logo with it. Nothing is animated but `xPercent`.
+ * one surface — until the halves translate apart, the mark leaving with the
+ * left door and the wordmark with the right. Nothing is animated but
+ * `xPercent`.
  *
  * The overlay is `fixed`, so the page does not move at all while the doors
  * open: scroll drives the split, and the truck stage behind it is pinned from
  * scroll position 0. Both are scrubbed against the same scroll positions, so
  * they cannot drift apart.
  *
- * The mark is the inline `LogoMark`, not the Cloudinary logo PNG — that file
- * is a black `D` on transparency, which would be invisible on this panel.
- * `LogoMark` recolours from `currentColor` and keeps its DOT Yellow dot.
+ * The panel is light, which is what lets it use the real logo file — that PNG
+ * is a black `D` on transparency and would disappear on a dark surface.
  */
 export function IntroDoors() {
   const reduced = usePrefersReducedMotion();
@@ -107,10 +121,24 @@ export function IntroDoors() {
   // section at the top of the page, which the visitor simply scrolls past.
   if (reduced) {
     return (
-      <section className="flex min-h-[70vh] flex-col items-center justify-center gap-6 bg-primary px-6 py-24 text-on-background">
-        <LogoMark className="h-20 w-20 sm:h-24 sm:w-24" />
-        <p className="max-w-md text-center text-base leading-relaxed text-on-background/70">
-          {LINE}
+      <section className="flex min-h-[70vh] flex-col items-center justify-center gap-7 bg-background px-6 py-24 text-on-background">
+        <div className="flex items-center gap-5">
+          <Image
+            src={LOGO_SRC}
+            alt=""
+            width={204}
+            height={203}
+            priority
+            className="h-16 w-16 sm:h-40 sm:w-40"
+          />
+          <Wordmark className="text-4xl sm:text-5xl" />
+        </div>
+        <p className={cn("text-center", HEADLINE_TYPE)}>
+          {HEADLINE.lead}{" "}
+          <span className="text-accent">
+            {HEADLINE.accent}
+            <span className="text-on-background">.</span>
+          </span>
         </p>
       </section>
     );
@@ -150,9 +178,39 @@ function DoorFace() {
   return (
     <div className="relative h-full w-full">
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-7 px-6">
-        <LogoMark className="h-20 w-20 sm:h-24 sm:w-24" />
-        <p className="max-w-md text-center text-base leading-relaxed text-on-background/70 sm:text-lg">
-          {LINE}
+        {/* The lockup straddles the seam: the mark takes the left half's inner
+            edge, the wordmark the right half's. Both doors render this same
+            row and clip it to their own side, so the split falls exactly
+            between the two — never through a glyph. The row is symmetric, so
+            its midpoint stays on the centre line whatever the padding. */}
+        <div className="flex w-full items-center">
+          <div className="flex w-1/2 justify-end pr-5 sm:pr-7">
+            <Image
+              src={LOGO_SRC}
+              alt=""
+              width={204}
+              height={203}
+              priority
+              className="h-16 w-16 sm:h-20 sm:w-20"
+            />
+          </div>
+          <div className="flex w-1/2 justify-start pl-5 sm:pl-7">
+            <Wordmark className="text-4xl sm:text-5xl" />
+          </div>
+        </div>
+
+        {/* Same seam, same trick: both words live in the DOM of both doors, so
+            the left copy still reads as one phrase to a screen reader even
+            though each door only shows its own half. */}
+        <p className={cn("flex w-full items-baseline", HEADLINE_TYPE)}>
+          {/* Half a word space each side, in `em` so the gap tracks the type. */}
+          <span className="flex w-1/2 justify-end pr-[0.25em]">
+            {HEADLINE.lead}
+          </span>
+          <span className="flex w-1/2 justify-start pl-[0.25em] text-accent">
+            {HEADLINE.accent}
+            <span className="text-on-background">.</span>
+          </span>
         </p>
       </div>
 
@@ -168,7 +226,7 @@ function DoorFace() {
           key={index}
           data-intro-truck={index}
           aria-hidden="true"
-          className="absolute left-0 text-on-background /25"
+          className="absolute left-0 text-on-background/25"
           style={{ bottom: truck.bottom, width: truck.width }}
         >
           <LineTruck className="w-full" />
