@@ -8,13 +8,22 @@ import type { CSSProperties, ReactNode, Ref } from "react";
 import { useEffect, useRef } from "react";
 
 import {
+  BAND_COVER_VH,
+  BAND_HEIGHT_VH,
+  buildTimeline,
   DESKTOP_QUERY,
   MOBILE_QUERY,
-  PHASE_START,
   SEQUENCE,
-  TOTAL_VH,
+  WIDE_QUERY,
+  type TimelinePlan,
 } from "@/components/new-home/config";
 import { Barrier, TrafficCone } from "@/components/new-home/RoadArt";
+import {
+  SERVICES,
+  ServicesBand,
+  ServicesList,
+} from "@/components/new-home/ServicesBand";
+import { ButtonLink } from "@/components/ui/Button";
 import { Container } from "@/components/ui/Container";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/utils";
@@ -41,6 +50,16 @@ const INFO = {
   title: "Every load, tracked end to end.",
   body: "Each truck on the network reports its own position, so the ETA keeps itself current — no chasing drivers, and no freight going quiet between two depots.",
 };
+
+const ENDING = {
+  title: "Ready when you are.",
+  body: "Tell us the lane, the load and the date. We come back with capacity and a price, usually the same day.",
+  cta: { label: "Get a quote", href: "/contact" },
+};
+
+/** Shared by the opening and closing headlines so the two read as a pair. */
+const DISPLAY_HEADING =
+  "font-bold uppercase leading-[0.95] tracking-tight text-balance";
 
 /**
  * ============================================================================
@@ -77,6 +96,22 @@ export function TruckSequence() {
     };
   }, [reduced]);
 
+  // Webfonts and the truck art both land after first paint and both change
+  // measurements the pin was built from, so remeasure once each has settled.
+  useEffect(() => {
+    if (reduced) return;
+    let live = true;
+    const refresh = () => {
+      if (live) ScrollTrigger.refresh();
+    };
+    document.fonts.ready.then(refresh);
+    window.addEventListener("load", refresh);
+    return () => {
+      live = false;
+      window.removeEventListener("load", refresh);
+    };
+  }, [reduced]);
+
   useGSAP(
     () => {
       if (reduced) return;
@@ -86,8 +121,17 @@ export function TruckSequence() {
 
       const mm = gsap.matchMedia();
 
-      mm.add({ isDesktop: DESKTOP_QUERY, isMobile: MOBILE_QUERY }, (context) => {
-        const { isDesktop } = context.conditions as { isDesktop: boolean };
+      const queries = {
+        isDesktop: DESKTOP_QUERY,
+        isMobile: MOBILE_QUERY,
+        isWide: WIDE_QUERY,
+      };
+
+      mm.add(queries, (context) => {
+        const { isDesktop, isWide } = context.conditions as {
+          isDesktop: boolean;
+          isWide: boolean;
+        };
 
         const lane = isDesktop
           ? SEQUENCE.lane.offset
@@ -97,47 +141,55 @@ export function TruckSequence() {
           ? SEQUENCE.truck.drift
           : SEQUENCE.truck.driftMobile;
 
-        const { phases, copy } = SEQUENCE;
+        const plan = buildTimeline(isWide, SERVICES.length);
+        const { start, duration } = plan;
+        const { copy, band } = SEQUENCE;
         const width = () => stage.clientWidth;
         const height = () => stage.clientHeight;
+        const vh = (value: number) => () => (height() * value) / 100;
 
         const tl = gsap.timeline({
           defaults: { ease: "none" },
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: () => `+=${TOTAL_VH * window.innerHeight}`,
+            end: () => `+=${plan.total * window.innerHeight}`,
             pin: stage,
             scrub: SEQUENCE.scrub,
             invalidateOnRefresh: true,
+            snap: {
+              snapTo: frameSnap(plan),
+              duration: band.snap.duration,
+              delay: band.snap.delay,
+              ease: band.snap.ease,
+            },
           },
         });
 
         // Holds the timeline open for the entire pin, so timeline time and the
         // config's viewport-height budget stay 1:1 whatever the beats do.
-        tl.to({}, { duration: TOTAL_VH }, 0);
+        tl.to({}, { duration: plan.total }, 0);
 
-        const beat1 = PHASE_START.beat1;
-        const beat2 = PHASE_START.beat2;
-        const beat3 = PHASE_START.beat3;
-        const outro = PHASE_START.outro;
+        const beat1 = start.beat1;
+        const beat2 = start.beat2;
+        const beat3 = start.beat3;
 
         // --- Beat 1: the truck drifts back while the copy parallaxes away ---
         tl.to(
           "[data-truck-body]",
-          { y: () => height() * drift, duration: phases.beat1 },
+          { y: () => height() * drift, duration: duration.beat1 },
           beat1,
         )
           .to(
             '[data-mission="title"]',
-            { y: () => -height() * copy.rise, duration: phases.beat1 },
+            { y: () => -height() * copy.rise, duration: duration.beat1 },
             beat1,
           )
           .to(
             '[data-mission="body"]',
             {
               y: () => -height() * copy.rise * copy.riseDamp,
-              duration: phases.beat1,
+              duration: duration.beat1,
             },
             beat1,
           )
@@ -145,24 +197,24 @@ export function TruckSequence() {
             '[data-mission="title"], [data-mission="body"]',
             {
               autoAlpha: 0,
-              duration: phases.beat1 * (1 - copy.fadeStart),
+              duration: duration.beat1 * (1 - copy.fadeStart),
             },
-            beat1 + phases.beat1 * copy.fadeStart,
+            beat1 + duration.beat1 * copy.fadeStart,
           );
 
         // --- Beat 2: lane change right, stats count up on the left ----------
-        laneChange(tl, beat2, phases.beat2, () => width() * lane, tilt);
+        laneChange(tl, beat2, duration.beat2, () => width() * lane, tilt);
         // Settle the beat-1 drift back to the middle as it goes.
         tl.to(
           "[data-truck-body]",
           {
             y: 0,
-            duration: phases.beat2 * SEQUENCE.lane.moveShare,
+            duration: duration.beat2 * SEQUENCE.lane.moveShare,
             ease: "power1.inOut",
           },
           beat2,
         );
-        blockIn(tl, '[data-block="stats"]', beat2, phases.beat2, -copy.slide);
+        blockIn(tl, '[data-block="stats"]', beat2, duration.beat2, -copy.slide);
 
         gsap.utils
           .toArray<HTMLElement>("[data-stat-value]", stage)
@@ -173,33 +225,122 @@ export function TruckSequence() {
               {
                 value: STATS[index].value,
                 duration:
-                  phases.beat2 * (copy.countUp[1] - copy.countUp[0]),
+                  duration.beat2 * (copy.countUp[1] - copy.countUp[0]),
                 ease: "power1.out",
                 onUpdate: () => {
                   el.textContent = String(Math.round(counter.value));
                 },
               },
-              beat2 + phases.beat2 * copy.countUp[0] + index * copy.countStagger,
+              beat2 +
+                duration.beat2 * copy.countUp[0] +
+                index * copy.countStagger,
             );
           });
 
         // --- Beat 3: lane change back left, info block on the right ---------
-        blockOut(tl, '[data-block="stats"]', beat3, phases.beat3, -copy.slide);
-        laneChange(tl, beat3, phases.beat3, () => -width() * lane, -tilt);
-        blockIn(tl, '[data-block="info"]', beat3, phases.beat3, copy.slide);
+        blockOut(tl, '[data-block="stats"]', beat3, duration.beat3, -copy.slide);
+        laneChange(tl, beat3, duration.beat3, () => -width() * lane, -tilt);
+        blockIn(tl, '[data-block="info"]', beat3, duration.beat3, copy.slide);
 
-        // --- Outro: clear the stage before the pin releases ------------------
-        tl.to(
+        // --- Recenter: info clears and the truck retakes the middle lane -----
+        blockOut(
+          tl,
           '[data-block="info"]',
-          { autoAlpha: 0, duration: phases.outro * 0.6, ease: "power2.in" },
-          outro + phases.outro * 0.4,
+          start.recenter,
+          duration.recenter,
+          copy.slide,
+        );
+        laneChange(tl, start.recenter, duration.recenter, () => 0, tilt);
+
+        // --- Band in: the panel rises until it covers the whole stage --------
+        // Hand back the visibility the markup withholds, in the same frame the
+        // `fromTo` below parks the band under the stage, so it is never seen
+        // sitting over the hero.
+        gsap.set("[data-band]", { visibility: "inherit" });
+        tl.fromTo(
+          "[data-band]",
+          { y: height },
+          {
+            y: vh(BAND_COVER_VH),
+            duration: duration.bandIn,
+            ease: band.ease,
+          },
+          start.bandIn,
+        );
+
+        // --- Frames: each one exits up-left as the next enters bottom-right --
+        // The travel angle is the band's own slant angle, so the cards move
+        // parallel to the edges the panel is cut with.
+        const travel = isWide
+          ? band.frameTravel
+          : band.frameTravelMobile;
+        const angle = () =>
+          Math.atan((height() * band.slantVh) / 100 / width());
+        const dx = () => width() * travel * Math.cos(angle());
+        const dy = () => width() * travel * Math.sin(angle());
+
+        const frameCards = (frame: number[]) =>
+          frame.map((card) => `[data-card="${card}"]`).join(", ");
+
+        // The opening frame is already settled when the band arrives.
+        gsap.set(frameCards(plan.frames[0]), { autoAlpha: 1, x: 0, y: 0 });
+
+        plan.frames.forEach((frame, index) => {
+          const next = plan.frames[index + 1];
+          if (!next) return;
+
+          const crossing = plan.framePhase * band.transitionShare;
+          const at = start.frames + (index + 1) * plan.framePhase - crossing;
+
+          tl.to(
+            frameCards(frame),
+            {
+              autoAlpha: 0,
+              x: () => -dx(),
+              y: () => -dy(),
+              duration: crossing,
+              ease: band.ease,
+            },
+            at,
+          ).fromTo(
+            frameCards(next),
+            { autoAlpha: 0, x: dx, y: dy },
+            {
+              autoAlpha: 1,
+              x: 0,
+              y: 0,
+              duration: crossing,
+              ease: band.ease,
+            },
+            at,
+          );
+        });
+
+        // --- Band out: lifts clear, the truck is where it was left -----------
+        tl.to(
+          "[data-band]",
+          {
+            y: vh(-BAND_HEIGHT_VH),
+            duration: duration.bandOut,
+            ease: band.ease,
+          },
+          start.bandOut,
+        );
+
+        // --- Ending: closing copy and the CTA arrive beside the truck --------
+        blockIn(
+          tl,
+          '[data-block="ending"]',
+          start.ending,
+          duration.ending,
+          copy.slide,
         );
 
         // --- Obstacles: sparse traffic the lane changes are avoiding ---------
         SEQUENCE.obstacles.forEach((obstacle, index) => {
           const at =
-            PHASE_START[obstacle.phase] +
-            SEQUENCE.phases[obstacle.phase] * obstacle.at;
+            start[obstacle.phase] +
+            duration[obstacle.phase] * obstacle.at;
           const x = () => width() * lane * obstacle.lane;
 
           tl.fromTo(
@@ -279,9 +420,45 @@ export function TruckSequence() {
             <InfoBlock />
           </div>
         </div>
+
+        {/* Ending sits to the truck's right on wide screens. Below `md` it
+            moves above the truck instead of under it — the CTA button makes
+            this block tall enough to collide with the cab otherwise. */}
+        <div className="absolute left-5 right-5 top-[8%] z-20 md:left-auto md:right-[6vw] md:top-1/2 md:max-w-[30ch] md:-translate-y-1/2">
+          <div data-block="ending" className="invisible opacity-0">
+            <EndingBlock />
+          </div>
+        </div>
+
+        <ServicesBand />
       </div>
     </section>
   );
+}
+
+/**
+ * Keeps a service frame from coming to rest half-swapped. It only bites inside
+ * the frames phase; everywhere else the natural scroll position is handed back
+ * untouched, so the beats and the band's own travel still scroll freely.
+ */
+function frameSnap(plan: TimelinePlan) {
+  const { start, duration, total, framePhase } = plan;
+  const from = start.frames / total;
+  const to = (start.frames + duration.frames) / total;
+  // Rest each frame in the middle of its hold, clear of both transitions.
+  const hold = (framePhase * (1 - SEQUENCE.band.transitionShare)) / 2;
+  const rest = plan.frames.map(
+    (_, index) => (start.frames + index * framePhase + hold) / total,
+  );
+
+  return (value: number) => {
+    if (value <= from || value >= to) return value;
+    return rest.reduce(
+      (best, point) =>
+        Math.abs(point - value) < Math.abs(best - value) ? point : best,
+      rest[0],
+    );
+  };
 }
 
 /**
@@ -380,10 +557,10 @@ function Truck() {
     <Image
       src={TRUCK_SRC}
       alt="A Dot Truckers long-haul truck seen from above"
-      width={500}
-      height={500}
+      width={600}
+      height={600}
       priority
-      className="h-[var(--truck-h)] w-[var(--truck-h)] rotate-180 md:h-[var(--truck-h-md)] md:w-[var(--truck-h-md)]"
+      className=" rotate-180 "
     />
   );
 }
@@ -398,9 +575,40 @@ function Obstacle({ kind }: { kind: "cone" | "barrier" }) {
 
 function MissionTitle() {
   return (
-    <h1 className="text-4xl font-bold uppercase leading-[0.95] tracking-tight text-balance sm:text-5xl md:text-6xl lg:text-7xl">
+    <h1
+      className={cn(
+        DISPLAY_HEADING,
+        "text-4xl sm:text-5xl md:text-6xl lg:text-7xl",
+      )}
+    >
       {MISSION.title}
     </h1>
+  );
+}
+
+function EndingBlock() {
+  return (
+    <div>
+      <h2
+        className={cn(
+          DISPLAY_HEADING,
+          "text-3xl sm:text-4xl md:text-6xl lg:text-7xl",
+        )}
+      >
+        {ENDING.title}
+      </h2>
+      <p className="mt-4 text-base leading-relaxed text-on-muted md:text-lg">
+        {ENDING.body}
+      </p>
+      <ButtonLink
+        href={ENDING.cta.href}
+        variant="accent"
+        size="lg"
+        className="mt-7"
+      >
+        {ENDING.cta.label}
+      </ButtonLink>
+    </div>
   );
 }
 
@@ -454,8 +662,9 @@ function InfoBlock() {
 }
 
 /**
- * Reduced motion: the same three beats, stacked and still. No pin, no scrub,
- * no obstacles — the truck simply sits between the copy it belongs to.
+ * Reduced motion: the whole sequence stacked and still. No pin, no scrub, no
+ * band and no obstacles — the truck sits between the copy it belongs to, the
+ * services are a plain list, and the ending is simply there.
  */
 function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
   return (
@@ -475,7 +684,7 @@ function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
             width={500}
             height={500}
             priority
-            className="h-[var(--truck-h)] w-[var(--truck-h)] rotate-180"
+            className="h-(--truck-h) w-(--truck-h) rotate-180"
             style={{ "--truck-h": `${SEQUENCE.truck.height}px` } as CSSProperties}
           />
         </div>
@@ -483,6 +692,14 @@ function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
         <div className="grid gap-14 md:grid-cols-2 md:items-center">
           <StatList />
           <InfoBlock />
+        </div>
+
+        <div className="mt-20">
+          <ServicesList />
+        </div>
+
+        <div className="mt-20 max-w-2xl">
+          <EndingBlock />
         </div>
       </Container>
     </section>

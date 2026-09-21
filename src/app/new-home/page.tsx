@@ -1,7 +1,8 @@
+import { HowItWorks } from "@/components/new-home/HowItWorks";
 import { IntroDoors } from "@/components/new-home/IntroDoors";
 import { NewHomeFooterCta } from "@/components/new-home/NewHomeFooterCta";
-import { NewHomeServices } from "@/components/new-home/NewHomeServices";
 import { TruckSequence } from "@/components/new-home/TruckSequence";
+import { TrustStrip } from "@/components/new-home/TrustStrip";
 import { createMetadata } from "@/lib/seo";
 
 /**
@@ -23,7 +24,8 @@ export default function NewHomePage() {
     <>
       <IntroDoors />
       <TruckSequence />
-      <NewHomeServices />
+      <TrustStrip />
+      <HowItWorks />
       <NewHomeFooterCta />
     </>
   );

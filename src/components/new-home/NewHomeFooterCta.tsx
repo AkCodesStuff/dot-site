@@ -1,10 +1,13 @@
+import Link from "next/link";
+
 import { Container } from "@/components/ui/Container";
 import { ButtonLink } from "@/components/ui/Button";
 import { siteConfig } from "@/config/site";
 
 /** Placeholder sign-off for the new landing page. Real footer comes later. */
 export function NewHomeFooterCta() {
-  const { phone, phoneHref, email } = siteConfig.contact;
+  const { phone, phoneHref, email, address, hours } = siteConfig.contact;
+  const year = new Date().getFullYear();
 
   return (
     <footer className="bg-primary text-on-primary">
@@ -41,6 +44,72 @@ export function NewHomeFooterCta() {
           </div>
         </div>
       </Container>
+
+      <div className="border-t border-on-primary/15">
+        <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <p className="font-ui text-xs font-semibold uppercase tracking-[0.2em] text-on-primary/50">
+              Corporate office
+            </p>
+            <p className="mt-4 text-sm leading-relaxed text-on-primary/70">
+              {address.street}
+              <br />
+              {address.locality}, {address.region} — {address.postalCode}
+            </p>
+          </div>
+
+          <div>
+            <p className="font-ui text-xs font-semibold uppercase tracking-[0.2em] text-on-primary/50">
+              Get in touch
+            </p>
+            <ul className="mt-4 space-y-2 text-sm text-on-primary/70">
+              <li>
+                <a
+                  href={`tel:${phoneHref}`}
+                  className="underline-offset-4 hover:text-on-primary hover:underline"
+                >
+                  {phone}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`mailto:${email}`}
+                  className="underline-offset-4 hover:text-on-primary hover:underline"
+                >
+                  {email}
+                </a>
+              </li>
+              <li>{hours}</li>
+            </ul>
+          </div>
+
+          <nav aria-label="Footer">
+            <p className="font-ui text-xs font-semibold uppercase tracking-[0.2em] text-on-primary/50">
+              Explore
+            </p>
+            <ul className="mt-4 space-y-2 text-sm">
+              {siteConfig.navigation.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="text-on-primary/70 underline-offset-4 hover:text-on-primary hover:underline"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </Container>
+      </div>
+
+      <div className="border-t border-on-primary/15">
+        <Container className="py-6">
+          <p className="text-sm text-on-primary/50">
+            &copy; {year} {siteConfig.name}. All rights reserved.
+          </p>
+        </Container>
+      </div>
     </footer>
   );
 }

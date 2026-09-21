@@ -107,9 +107,9 @@ export function IntroDoors() {
   // section at the top of the page, which the visitor simply scrolls past.
   if (reduced) {
     return (
-      <section className="flex min-h-[70vh] flex-col items-center justify-center gap-6 bg-primary px-6 py-24 text-on-primary">
+      <section className="flex min-h-[70vh] flex-col items-center justify-center gap-6 bg-primary px-6 py-24 text-on-background">
         <LogoMark className="h-20 w-20 sm:h-24 sm:w-24" />
-        <p className="max-w-md text-center text-base leading-relaxed text-on-primary/70">
+        <p className="max-w-md text-center text-base leading-relaxed text-on-background/70">
           {LINE}
         </p>
       </section>
@@ -123,7 +123,7 @@ export function IntroDoors() {
     >
       <div
         ref={leftRef}
-        className="absolute inset-y-0 left-0 w-1/2 overflow-hidden border-r border-accent/25 bg-primary text-on-primary"
+        className="absolute inset-y-0 left-0 w-1/2 overflow-hidden border-r border-accent/25 bg-background text-on-background"
       >
         {/* A full-viewport-width copy of the panel, anchored to the seam. */}
         <div className="absolute inset-y-0 left-0 w-[200%]">
@@ -133,7 +133,7 @@ export function IntroDoors() {
 
       <div
         ref={rightRef}
-        className="absolute inset-y-0 right-0 w-1/2 overflow-hidden border-l border-accent/25 bg-primary text-on-primary"
+        className="absolute inset-y-0 right-0 w-1/2 overflow-hidden border-l border-accent/25 bg-background text-on-background"
       >
         {/* The mirror copy. Hidden from screen readers so the panel's one line
             of copy is not announced twice. */}
@@ -151,14 +151,14 @@ function DoorFace() {
     <div className="relative h-full w-full">
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-7 px-6">
         <LogoMark className="h-20 w-20 sm:h-24 sm:w-24" />
-        <p className="max-w-md text-center text-base leading-relaxed text-on-primary/70 sm:text-lg">
+        <p className="max-w-md text-center text-base leading-relaxed text-on-background/70 sm:text-lg">
           {LINE}
         </p>
       </div>
 
       <div
         data-intro-chevron
-        className="absolute inset-x-0 bottom-32 flex justify-center text-on-primary/45"
+        className="absolute inset-x-0 bottom-32 flex justify-center text-on-background/45"
       >
         <ChevronDown className="h-6 w-6" />
       </div>
@@ -168,7 +168,7 @@ function DoorFace() {
           key={index}
           data-intro-truck={index}
           aria-hidden="true"
-          className="absolute left-0 text-on-primary/25"
+          className="absolute left-0 text-on-background /25"
           style={{ bottom: truck.bottom, width: truck.width }}
         >
           <LineTruck className="w-full" />
