@@ -252,6 +252,36 @@ export const SEQUENCE = {
   },
 
   /**
+   * The same seven steps below `md`, where a vertical list has nowhere near
+   * enough width to read. They ride a semicircle whose centre sits ON the
+   * right edge of the wheel's box — so the arc is exactly the left half of a
+   * circle, bulging into the screen and closing on itself at the edge.
+   *
+   * Scroll turns the wheel by one step per item, linearly, so it tracks the
+   * scrollbar exactly. Distance from the centre of the arc drives both scale
+   * and opacity, which is what leaves roughly three steps legible at a time
+   * and fades the rest away toward the edges.
+   */
+  wheel: {
+    /** Angle between adjacent steps, degrees. */
+    step: 26,
+    /**
+     * Distance from the centre at which a step has faded out entirely. Set
+     * against `step` so the middle three read clearly (1, 0.57, 0.13 opacity)
+     * and the rest are ghosts — which also means the ones the box clips at its
+     * right edge are too faint for the cut to register.
+     */
+    falloff: 60,
+    /** Circle radius as a fraction of the wheel box's own width. */
+    radius: 0.95,
+    /** Scale at the centre of the arc, and at the far edge. */
+    scale: [1, 0.68],
+    /** Fade windows for the wheel as a whole, as fractions of the beat. */
+    in: [0.05, 0.22],
+    out: [0.88, 1],
+  },
+
+  /**
    * The close. The truck pulls back to centre, the copy arrives beside it,
    * and then the truck simply drives on — up and out of the top of the frame,
    * over the copy, which stays where it is.

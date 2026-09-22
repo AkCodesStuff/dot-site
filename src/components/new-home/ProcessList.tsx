@@ -64,8 +64,15 @@ type Step = (typeof PROCESS)[number];
  */
 export function ProcessList({ animated = false }: { animated?: boolean }) {
   return (
-    <div>
-      <ol>
+    <>
+      {/* Below `md` the list gives way to the wheel. Only one of the two is
+          ever displayed, so neither is announced twice. The wheel needs the
+          timeline to place it, so the static layout keeps the list at every
+          width instead. */}
+      {animated ? <ProcessWheel /> : null}
+
+      <div className={animated ? "hidden h-full md:block" : undefined}>
+        <ol>
         {PROCESS.map((step, index) => (
           <li
             key={step.name}
@@ -113,8 +120,47 @@ export function ProcessList({ animated = false }: { animated?: boolean }) {
           animated && "invisible opacity-0",
         )}
       >
-        {FOOTER}
-      </p>
+          {FOOTER}
+        </p>
+      </div>
+    </>
+  );
+}
+
+/**
+ * The phone layout: the same seven steps on a semicircle whose centre sits on
+ * the right edge of this box, so the arc closes on itself there and bulges
+ * left into the screen.
+ *
+ * Every item is parked at the box's left edge and vertical middle; the
+ * timeline places each one on the arc with `x`, `y`, `scale` and `opacity`,
+ * recomputed as the wheel turns. Nothing here is rotated, so the labels stay
+ * upright all the way round.
+ */
+function ProcessWheel() {
+  return (
+    <div
+      data-wheel
+      className="invisible relative h-full overflow-hidden opacity-0 md:hidden"
+    >
+      {PROCESS.map((step, index) => (
+        <div
+          key={step.name}
+          data-wheel-item
+          className="absolute left-0 top-1/2 flex items-center gap-2.5 whitespace-nowrap"
+        >
+          <span className="font-ui text-[0.65rem] font-semibold tabular-nums text-accent">
+            {String(index + 1).padStart(2, "0")}
+          </span>
+          <span
+            aria-hidden="true"
+            className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+          />
+          <span className="font-ui text-sm font-bold uppercase tracking-[0.12em] text-on-primary">
+            {step.name}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }

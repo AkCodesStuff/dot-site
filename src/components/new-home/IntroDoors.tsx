@@ -131,7 +131,7 @@ export function IntroDoors() {
             priority
             className="h-16 w-16 sm:h-40 sm:w-40"
           />
-          <Wordmark className="text-4xl sm:text-5xl" />
+          <Wordmark className="text-[6vw]" />
         </div>
         <p className={cn("text-center", HEADLINE_TYPE)}>
           {HEADLINE.lead}{" "}

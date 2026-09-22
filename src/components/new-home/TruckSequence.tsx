@@ -415,30 +415,34 @@ export function TruckSequence() {
           -tilt,
         );
 
-        tl.fromTo(
-          "[data-process]",
-          { autoAlpha: 0, x: process.slide },
-          {
-            autoAlpha: 1,
-            x: 0,
-            duration: duration.process * (process.in[1] - process.in[0]),
-            ease: "power2.out",
-            stagger: process.stagger,
-          },
-          start.process + duration.process * process.in[0],
-        );
+        if (isDesktop) {
+          tl.fromTo(
+            "[data-process]",
+            { autoAlpha: 0, x: process.slide },
+            {
+              autoAlpha: 1,
+              x: 0,
+              duration: duration.process * (process.in[1] - process.in[0]),
+              ease: "power2.out",
+              stagger: process.stagger,
+            },
+            start.process + duration.process * process.in[0],
+          );
 
-        tl.to(
-          "[data-process]",
-          {
-            autoAlpha: 0,
-            x: process.slide * 0.5,
-            duration: duration.process * (process.out[1] - process.out[0]),
-            ease: "power2.in",
-            stagger: process.stagger * 0.5,
-          },
-          start.process + duration.process * process.out[0],
-        );
+          tl.to(
+            "[data-process]",
+            {
+              autoAlpha: 0,
+              x: process.slide * 0.5,
+              duration: duration.process * (process.out[1] - process.out[0]),
+              ease: "power2.in",
+              stagger: process.stagger * 0.5,
+            },
+            start.process + duration.process * process.out[0],
+          );
+        } else {
+          spinWheel(tl, stage, start.process, duration.process);
+        }
 
         // --- Ending: the truck retakes the centre, then the closing copy -----
         laneChange(tl, start.ending, duration.ending, () => 0, tilt);
@@ -578,7 +582,10 @@ export function TruckSequence() {
         {/* The workflow, down the side the truck has pulled away from. It only
             ever shows on the blacked-out stage, so its colours are the
             `on-primary` pair rather than the stage's light-theme tokens. */}
-        <div className="absolute right-4 top-1/2 z-20 w-[62%] -translate-y-1/2 md:right-[5vw] md:w-auto md:max-w-[26rem] lg:max-w-[38rem]">
+        {/* Below `md` this box is the wheel's frame — it needs real height for
+            the arc to sweep through, so it spans the stage rather than sitting
+            centred on it. From `md` it collapses back to the list's box. */}
+        <div className="absolute bottom-[8%] right-0 top-[8%] z-20 w-[72%] md:bottom-auto md:right-[5vw] md:top-1/2 md:w-auto md:max-w-[26rem] md:-translate-y-1/2 lg:max-w-[38rem]">
           <ProcessList animated />
         </div>
 
@@ -749,6 +756,86 @@ function statsBeat(
       stagger: stats.stagger * 0.75,
     },
     at + beat * stats.out[0],
+  );
+}
+
+/**
+ * The phone layout of the process beat: the seven steps ride a semicircle
+ * centred on the right edge of their box, and scroll turns it.
+ *
+ * One tween drives a single angle; everything else is derived from it on each
+ * frame. That keeps the wheel exactly as fast as the scrollbar (linear ease,
+ * scrubbed like everything else) and means position, scale and fade can never
+ * disagree about where a step is — they all read the same number.
+ *
+ * Nothing is rotated: each step is placed on the arc with `x`/`y`, so the
+ * labels stay upright the whole way round.
+ */
+function spinWheel(
+  tl: gsap.core.Timeline,
+  scope: HTMLElement,
+  at: number,
+  beat: number,
+) {
+  const wheel = scope.querySelector<HTMLElement>("[data-wheel]");
+  const items = gsap.utils.toArray<HTMLElement>("[data-wheel-item]", scope);
+  if (!wheel || !items.length) return;
+
+  const config = SEQUENCE.wheel;
+  const [nearScale, farScale] = config.scale;
+
+  // Parked at the box's left edge, centred on their own row, and scaled from
+  // that anchor so a shrinking step stays on the arc instead of drifting.
+  gsap.set(items, { yPercent: -50, transformOrigin: "left center" });
+
+  const spin = { index: 0 };
+  const place = () => {
+    const radius = wheel.clientWidth * config.radius;
+
+    items.forEach((el, index) => {
+      const degrees = (index - spin.index) * config.step;
+      const radians = (degrees * Math.PI) / 180;
+      // 0 at the centre of the arc, 1 once it has faded out entirely.
+      const away = Math.min(Math.abs(degrees) / config.falloff, 1);
+
+      gsap.set(el, {
+        x: wheel.clientWidth - radius * Math.cos(radians),
+        y: radius * Math.sin(radians),
+        scale: nearScale + (farScale - nearScale) * away,
+        opacity: 1 - away,
+      });
+    });
+  };
+  place();
+
+  tl.to(
+    spin,
+    {
+      index: items.length - 1,
+      duration: beat,
+      ease: "none",
+      onUpdate: place,
+    },
+    at,
+  );
+
+  tl.fromTo(
+    wheel,
+    { autoAlpha: 0 },
+    {
+      autoAlpha: 1,
+      duration: beat * (config.in[1] - config.in[0]),
+      ease: "power2.out",
+    },
+    at + beat * config.in[0],
+  ).to(
+    wheel,
+    {
+      autoAlpha: 0,
+      duration: beat * (config.out[1] - config.out[0]),
+      ease: "power2.in",
+    },
+    at + beat * config.out[0],
   );
 }
 
