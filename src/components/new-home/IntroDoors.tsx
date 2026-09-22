@@ -195,11 +195,11 @@ function DoorFace() {
               width={204}
               height={203}
               priority
-              className="h-16 w-16 sm:h-20 sm:w-20"
+              className="h-16 w-16 sm:h-24 sm:w-24"
             />
           </div>
           <div className="flex w-1/2 justify-start pl-5 sm:pl-7">
-            <Wordmark className="text-4xl sm:text-5xl" />
+            <Wordmark className="text-6xl sm:text-8xl" />
           </div>
         </div>
 

@@ -274,20 +274,13 @@ export const SEQUENCE = {
     /** How far LEFT the truck pulls, as a fraction of stage width. */
     truckShift: 0.3,
     truckShiftMobile: 0.38,
-    /** Arrival and departure windows, as fractions of the beat. */
-    in: [0.14, 0.55],
-    out: [0.82, 1],
-    /** Delay between rows, in timeline units (viewport heights). */
-    stagger: 0.03,
-    /** Slide distance on the way in, px. They leave on a shorter one. */
-    slide: 40,
   },
 
   /**
-   * The same seven steps below `md`, where a vertical list has nowhere near
-   * enough width to read. They ride a semicircle whose centre sits ON the
-   * right edge of the wheel's box — so the arc is exactly the left half of a
-   * circle, bulging into the screen and closing on itself at the edge.
+   * How the seven steps are shown at every width: riding a semicircle whose
+   * centre sits ON the right edge of the wheel's box, so the arc is the left
+   * half of a circle, bulging into the screen and closing on itself at the
+   * edge. From `md` each step carries its description too.
    *
    * Scroll turns the wheel by one step per item, linearly, so it tracks the
    * scrollbar exactly. Distance from the centre of the arc drives both scale
@@ -304,8 +297,18 @@ export const SEQUENCE = {
      * right edge are too faint for the cut to register.
      */
     falloff: 60,
-    /** Circle radius as a fraction of the wheel box's own width. */
+    /**
+     * Circle radius as a fraction of the wheel box's own width.
+     *
+     * Two values because the two boxes are shaped differently. On a phone the
+     * box is narrow, so a radius near its full width still curves visibly. On
+     * a desktop box the same fraction would put the centre so far out that the
+     * arc flattens into the straight line this replaced — hence the tighter
+     * figure, which also leaves room to the right of each step for its
+     * description.
+     */
     radius: 0.95,
+    radiusDesktop: 0.62,
     /** Scale at the centre of the arc, and at the far edge. */
     scale: [1, 0.68],
     /** Fade windows for the wheel as a whole, as fractions of the beat. */

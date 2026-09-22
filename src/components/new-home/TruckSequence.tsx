@@ -436,34 +436,7 @@ export function TruckSequence() {
           -tilt,
         );
 
-        if (isDesktop) {
-          tl.fromTo(
-            "[data-process]",
-            { autoAlpha: 0, x: process.slide },
-            {
-              autoAlpha: 1,
-              x: 0,
-              duration: duration.process * (process.in[1] - process.in[0]),
-              ease: "power2.out",
-              stagger: process.stagger,
-            },
-            start.process + duration.process * process.in[0],
-          );
-
-          tl.to(
-            "[data-process]",
-            {
-              autoAlpha: 0,
-              x: process.slide * 0.5,
-              duration: duration.process * (process.out[1] - process.out[0]),
-              ease: "power2.in",
-              stagger: process.stagger * 0.5,
-            },
-            start.process + duration.process * process.out[0],
-          );
-        } else {
-          spinWheel(tl, stage, start.process, duration.process);
-        }
+        spinWheel(tl, stage, start.process, duration.process, isDesktop);
 
         // --- Ending: the truck retakes the centre, then the closing copy -----
         laneChange(tl, start.ending, duration.ending, () => 0, tilt);
@@ -623,10 +596,10 @@ export function TruckSequence() {
         {/* The workflow, down the side the truck has pulled away from. It only
             ever shows on the blacked-out stage, so its colours are the
             `on-primary` pair rather than the stage's light-theme tokens. */}
-        {/* Below `md` this box is the wheel's frame — it needs real height for
-            the arc to sweep through, so it spans the stage rather than sitting
-            centred on it. From `md` it collapses back to the list's box. */}
-        <div className="absolute bottom-[8%] right-0 top-[8%] z-20 w-[72%] md:bottom-auto md:right-[5vw] md:top-1/2 md:w-auto md:max-w-[26rem] md:-translate-y-1/2 lg:max-w-[38rem]">
+        {/* The wheel's frame. It spans the stage at every width because the arc
+            needs real height to sweep through; only the width changes, and the
+            width is what sets the radius (see `wheel.radius*`). */}
+        <div className="absolute bottom-[8%] right-0 top-[8%] z-20 w-[72%] md:right-[3vw] md:w-[52%] lg:w-[42%]">
           <ProcessList animated />
         </div>
 
@@ -826,6 +799,7 @@ function spinWheel(
   scope: HTMLElement,
   at: number,
   beat: number,
+  isDesktop: boolean,
 ) {
   const wheel = scope.querySelector<HTMLElement>("[data-wheel]");
   const items = gsap.utils.toArray<HTMLElement>("[data-wheel-item]", scope);
@@ -833,27 +807,35 @@ function spinWheel(
 
   const config = SEQUENCE.wheel;
   const [nearScale, farScale] = config.scale;
+  const radiusRatio = isDesktop ? config.radiusDesktop : config.radius;
 
-  // Parked at the box's left edge, centred on their own row, and scaled from
-  // that anchor so a shrinking step stays on the arc instead of drifting.
-  gsap.set(items, { yPercent: -50, transformOrigin: "left center" });
+  // Hand back the visibility the markup withholds, immediately. Only opacity
+  // is animated below — leaving `visibility` to `autoAlpha` means the whole
+  // wheel stays hidden if anything about that tween fails to run.
+  gsap.set(wheel, { visibility: "inherit" });
 
   const spin = { index: 0 };
   const place = () => {
-    const radius = wheel.clientWidth * config.radius;
+    const width = wheel.clientWidth;
+    const radius = width * radiusRatio;
 
     items.forEach((el, index) => {
       const degrees = (index - spin.index) * config.step;
       const radians = (degrees * Math.PI) / 180;
       // 0 at the centre of the arc, 1 once it has faded out entirely.
       const away = Math.min(Math.abs(degrees) / config.falloff, 1);
+      const x = width - radius * Math.cos(radians);
+      const y = radius * Math.sin(radians);
 
-      gsap.set(el, {
-        x: wheel.clientWidth - radius * Math.cos(radians),
-        y: radius * Math.sin(radians),
-        scale: nearScale + (farScale - nearScale) * away,
-        opacity: 1 - away,
-      });
+      // Written straight to the element rather than through `gsap.set`. This
+      // runs on every scrubbed frame, and a `set` per item per frame means
+      // building tweens inside another tween's `onUpdate` — which GSAP warns
+      // against, and which piles up records in the surrounding context.
+      // The -50% centres each step on its own point of the arc.
+      el.style.transform = `translate(${x}px, calc(${y}px - 50%)) scale(${
+        nearScale + (farScale - nearScale) * away
+      })`;
+      el.style.opacity = String(1 - away);
     });
   };
   place();
@@ -871,9 +853,9 @@ function spinWheel(
 
   tl.fromTo(
     wheel,
-    { autoAlpha: 0 },
+    { opacity: 0 },
     {
-      autoAlpha: 1,
+      opacity: 1,
       duration: beat * (config.in[1] - config.in[0]),
       ease: "power2.out",
     },
@@ -881,7 +863,7 @@ function spinWheel(
   ).to(
     wheel,
     {
-      autoAlpha: 0,
+      opacity: 0,
       duration: beat * (config.out[1] - config.out[0]),
       ease: "power2.in",
     },

@@ -1,5 +1,3 @@
-import { cn } from "@/lib/utils";
-
 /** The movement lifecycle, start to finish. */
 const PROCESS = [
   {
@@ -63,24 +61,19 @@ type Step = (typeof PROCESS)[number];
  * description into six lines and the list into something taller than the stage.
  */
 export function ProcessList({ animated = false }: { animated?: boolean }) {
+  // The wheel is the layout at every width now. The straight list survives
+  // only as the reduced-motion fallback, because the wheel has no positions
+  // without the timeline to place it on the arc.
+  if (animated) return <ProcessWheel />;
+
   return (
     <>
-      {/* Below `md` the list gives way to the wheel. Only one of the two is
-          ever displayed, so neither is announced twice. The wheel needs the
-          timeline to place it, so the static layout keeps the list at every
-          width instead. */}
-      {animated ? <ProcessWheel /> : null}
-
-      <div className={animated ? "hidden h-full md:block" : undefined}>
+      <div>
         <ol>
         {PROCESS.map((step, index) => (
           <li
             key={step.name}
-            data-process={animated ? "" : undefined}
-            className={cn(
-              "flex items-center gap-3 border-t border-on-primary/10 py-3 first:border-t-0 md:gap-4 md:py-3.5",
-              animated && "invisible opacity-0",
-            )}
+            className="flex items-center gap-3 border-t border-on-primary/10 py-3 first:border-t-0 md:gap-4 md:py-3.5"
           >
             <span className="font-ui text-xs font-semibold tabular-nums text-on-primary/40 md:text-sm">
               {String(index + 1).padStart(2, "0")}
@@ -113,13 +106,7 @@ export function ProcessList({ animated = false }: { animated?: boolean }) {
         ))}
       </ol>
 
-      <p
-        data-process={animated ? "" : undefined}
-        className={cn(
-          "mt-5 text-center font-ui text-[0.65rem] font-semibold uppercase tracking-[0.15em] text-on-primary/45 md:text-xs",
-          animated && "invisible opacity-0",
-        )}
-      >
+        <p className="mt-5 text-center font-ui text-[0.65rem] font-semibold uppercase tracking-[0.15em] text-on-primary/45 md:text-xs">
           {FOOTER}
         </p>
       </div>
@@ -128,37 +115,47 @@ export function ProcessList({ animated = false }: { animated?: boolean }) {
 }
 
 /**
- * The phone layout: the same seven steps on a semicircle whose centre sits on
- * the right edge of this box, so the arc closes on itself there and bulges
- * left into the screen.
+ * The seven steps on a semicircle whose centre sits on the right edge of this
+ * box, so the arc closes on itself there and bulges left into the screen.
  *
- * Every item is parked at the box's left edge and vertical middle; the
- * timeline places each one on the arc with `x`, `y`, `scale` and `opacity`,
- * recomputed as the wheel turns. Nothing here is rotated, so the labels stay
- * upright all the way round.
+ * Every step is parked at the box's left edge and vertical middle; the timeline
+ * places each one on the arc with `x`, `y`, `scale` and `opacity`, recomputed
+ * as the wheel turns. Nothing here is rotated, so the labels stay upright all
+ * the way round.
+ *
+ * Descriptions only from `md`. A phone-width column has no room for them, and
+ * the step names alone are what make the wheel legible while it moves.
  */
 function ProcessWheel() {
   return (
     <div
       data-wheel
-      className="invisible relative h-full overflow-hidden opacity-0 md:hidden"
+      className="invisible relative h-full overflow-hidden opacity-0"
     >
       {PROCESS.map((step, index) => (
         <div
           key={step.name}
           data-wheel-item
-          className="absolute left-0 top-1/2 flex items-center gap-2.5 whitespace-nowrap"
+          // `origin-left` so a shrinking step stays anchored on the arc
+          // instead of drifting toward its own centre. The timeline writes the
+          // transform directly, including the -50% that centres it.
+          className="absolute left-0 top-1/2 flex origin-left items-start gap-2.5 whitespace-nowrap md:w-56 md:gap-3 md:whitespace-normal"
         >
-          <span className="font-ui text-[0.65rem] font-semibold tabular-nums text-accent">
+          <span className="font-ui text-[0.65rem] font-semibold tabular-nums text-accent md:mt-0.5">
             {String(index + 1).padStart(2, "0")}
           </span>
           <span
             aria-hidden="true"
-            className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+            className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent md:mt-1.5"
           />
-          <span className="font-ui text-sm font-bold uppercase tracking-[0.12em] text-on-primary">
-            {step.name}
-          </span>
+          <div className="min-w-0">
+            <h3 className="font-ui text-sm font-bold uppercase tracking-[0.12em] text-on-primary">
+              {step.name}
+            </h3>
+            <p className="mt-1 hidden text-sm leading-snug text-on-primary/60 md:block">
+              {step.body}
+            </p>
+          </div>
         </div>
       ))}
     </div>
