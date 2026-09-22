@@ -57,6 +57,8 @@ export const SEQUENCE = {
     bandOut: 0.8,
     /** Lamps strike and the beams reach out into the dark. */
     night: 0.6,
+    /** Truck pulls aside; the seven-step workflow runs down the far side. */
+    process: 1.4,
     /** Closing headline, subtext and CTA fade in beside the truck. */
     ending: 0.8,
     /** Breathing room before the pin releases. */
@@ -229,6 +231,26 @@ export const SEQUENCE = {
     ease: "power2.out",
   },
 
+  /**
+   * The workflow list, on the night stage with the lamps already lit.
+   *
+   * The truck pulls further aside here than a lane change would take it —
+   * seven rows need more room than a lane's worth of clearance, and on a phone
+   * the only way they fit is for the truck to sit mostly out of frame.
+   */
+  process: {
+    /** How far LEFT the truck pulls, as a fraction of stage width. */
+    truckShift: 0.3,
+    truckShiftMobile: 0.38,
+    /** Arrival and departure windows, as fractions of the beat. */
+    in: [0.14, 0.55],
+    out: [0.82, 1],
+    /** Delay between rows, in timeline units (viewport heights). */
+    stagger: 0.03,
+    /** Slide distance on the way in, px. They leave on a shorter one. */
+    slide: 40,
+  },
+
   intro: {
     /** Seconds for one line-art truck to cross the intro panel. Ambient, not scrubbed. */
     truckCrossing: 16,
@@ -248,6 +270,7 @@ const ORDER: Phase[] = [
   "frames",
   "bandOut",
   "night",
+  "process",
   "ending",
   "outro",
 ];

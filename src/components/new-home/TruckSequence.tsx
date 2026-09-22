@@ -17,6 +17,7 @@ import {
   WIDE_QUERY,
   type TimelinePlan,
 } from "@/components/new-home/config";
+import { ProcessList } from "@/components/new-home/ProcessList";
 import { Barrier, TrafficCone } from "@/components/new-home/RoadArt";
 import {
   SERVICES,
@@ -399,7 +400,48 @@ export function TruckSequence() {
           start.night + duration.night * night.beams[0],
         );
 
-        // --- Ending: closing copy and the CTA arrive beside the truck --------
+        // --- Process: the truck pulls aside, the workflow runs down the far
+        // side. Deeper than a lane change, because seven rows need the room.
+        const process = SEQUENCE.process;
+        const shift = isDesktop
+          ? process.truckShift
+          : process.truckShiftMobile;
+
+        laneChange(
+          tl,
+          start.process,
+          duration.process,
+          () => -width() * shift,
+          -tilt,
+        );
+
+        tl.fromTo(
+          "[data-process]",
+          { autoAlpha: 0, x: process.slide },
+          {
+            autoAlpha: 1,
+            x: 0,
+            duration: duration.process * (process.in[1] - process.in[0]),
+            ease: "power2.out",
+            stagger: process.stagger,
+          },
+          start.process + duration.process * process.in[0],
+        );
+
+        tl.to(
+          "[data-process]",
+          {
+            autoAlpha: 0,
+            x: process.slide * 0.5,
+            duration: duration.process * (process.out[1] - process.out[0]),
+            ease: "power2.in",
+            stagger: process.stagger * 0.5,
+          },
+          start.process + duration.process * process.out[0],
+        );
+
+        // --- Ending: the truck retakes the centre, then the closing copy -----
+        laneChange(tl, start.ending, duration.ending, () => 0, tilt);
         blockIn(
           tl,
           '[data-block="ending"]',
@@ -499,8 +541,8 @@ export function TruckSequence() {
         {/* Both figure sets sit on the side the truck has just left. Below
             `md` they drop under the truck instead — there is no room for a
             grid alongside it at phone widths. */}
-        <div className="absolute bottom-[6%] left-5 right-5 z-20 md:bottom-auto md:left-[6vw] md:right-auto md:top-1/2 md:max-w-[24rem] md:-translate-y-1/2 lg:max-w-[30rem]">
-          <StatGrid id="fleet" items={FLEET_STATS} className="grid-cols-2" animated />
+        <div className="absolute bottom-1/2 translate-y-1/2 left-5 right-5 z-20 md:bottom-auto md:left-[6vw] md:right-auto md:top-1/2 md:max-w-[24rem] md:-translate-y-1/2 lg:max-w-[30rem]">
+          <StatGrid id="fleet" items={FLEET_STATS} className="grid-cols-1 md:grid-cols-2 max-w-40 md:max-w-none" animated />
         </div>
 
         <div className="absolute bottom-[6%] left-5 right-5 z-20 md:bottom-auto md:left-auto md:right-[6vw] md:top-1/2 md:max-w-[20rem] md:-translate-y-1/2">
@@ -512,11 +554,23 @@ export function TruckSequence() {
           />
         </div>
 
-        {/* Ending sits to the truck's right on wide screens. Below `md` it
-            moves above the truck instead of under it — the CTA button makes
-            this block tall enough to collide with the cab otherwise. */}
-        <div className="absolute left-5 right-5 top-[8%] z-20 md:left-auto md:right-[6vw] md:top-1/2 md:max-w-[30ch] md:-translate-y-1/2">
-          <div data-block="ending" className="invisible opacity-0">
+        {/* The workflow, down the side the truck has pulled away from. It only
+            ever shows on the blacked-out stage, so its colours are the
+            `on-primary` pair rather than the stage's light-theme tokens. */}
+        <div className="absolute right-4 top-1/2 z-20 w-[62%] -translate-y-1/2 md:right-[5vw] md:w-auto md:max-w-[26rem] lg:max-w-[38rem]">
+          <ProcessList animated />
+        </div>
+
+        {/* Ending sits as one stack to the truck's right on wide screens.
+            Below `md` it splits to the hero's own two corners instead — the
+            box spans the same 10% insets the hero copy uses, and the flex
+            column pushes the headline to the top and the description and CTA
+            to the bottom. */}
+        <div className="absolute bottom-[10%] left-5 right-5 top-[10%] z-20 md:bottom-auto md:left-auto md:right-[6vw] md:top-1/2 md:max-w-[30ch] md:-translate-y-1/2">
+          <div
+            data-block="ending"
+            className="invisible flex h-full flex-col justify-between opacity-0 md:block md:h-auto"
+          >
             <EndingBlock />
           </div>
         </div>
@@ -886,27 +940,29 @@ function StageText({
  */
 function EndingBlock() {
   return (
-    <div>
-      <h2
-        className={cn(
-          DISPLAY_HEADING,
-          "text-3xl text-on-primary sm:text-4xl md:text-6xl lg:text-7xl",
-        )}
-      >
+    // A fragment, not a wrapper: the parent is a flex column below `md`, and
+    // it needs exactly these two children to push to its two ends.
+    <>
+      <h2 className={cn(DISPLAY_HEADING, STAGE_TITLE_TYPE, "text-on-primary")}>
         {ENDING.title}
       </h2>
-      <p className="mt-4 text-base leading-relaxed text-on-primary/70 md:text-lg">
-        {ENDING.body}
-      </p>
-      <ButtonLink
-        href={ENDING.cta.href}
-        variant="accent"
-        size="lg"
-        className="mt-7"
-      >
-        {ENDING.cta.label}
-      </ButtonLink>
-    </div>
+
+      {/* `mt-4` is for the stacked reduced-motion layout. In the flex column
+          it is absorbed by the free space and changes nothing. */}
+      <div className="mt-4 text-right md:text-left">
+        <p className="text-sm text-on-primary/70 md:text-lg md:leading-relaxed">
+          {ENDING.body}
+        </p>
+        <ButtonLink
+          href={ENDING.cta.href}
+          variant="accent"
+          size="lg"
+          className="mt-5 md:mt-7"
+        >
+          {ENDING.cta.label}
+        </ButtonLink>
+      </div>
+    </>
   );
 }
 
@@ -938,13 +994,13 @@ function StatGrid({
           data-stat={animated ? id : undefined}
           className={animated ? "invisible opacity-0" : undefined}
         >
-          <dd className="font-ui text-2xl font-bold tracking-tight tabular-nums sm:text-3xl lg:text-4xl">
+          <dd className="font-ui text-2xl font-bold tracking-tight tabular-nums sm:text-3xl lg:text-5xl">
             <span data-stat-value={animated ? id : undefined}>
               {animated ? 0 : IN_NUMBER.format(stat.value)}
             </span>
             {stat.suffix}
             {stat.unit ? (
-              <span className="ml-1.5 text-sm font-semibold tracking-normal text-on-muted sm:text-base">
+              <span className="ml-1.5 text-sm  font-semibold tracking-normal text-on-muted sm:text-base">
                 {stat.unit}
               </span>
             ) : null}
@@ -988,7 +1044,7 @@ function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
             <StatGrid
               id="fleet"
               items={FLEET_STATS}
-              className="grid-cols-2"
+              className="grid-cols-1 md:grid-cols-2"
             />
             <StatGrid
               id="facility"
@@ -1031,6 +1087,10 @@ function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
               />
               <Headlights lit />
             </div>
+          </div>
+
+          <div className="mx-auto mt-16 max-w-3xl">
+            <ProcessList />
           </div>
 
           <div className="mt-16 max-w-2xl">

@@ -4,7 +4,7 @@ import { NewHomeFooterCta } from "@/components/new-home/NewHomeFooterCta";
 import { TruckSequence } from "@/components/new-home/TruckSequence";
 import { TrustStrip } from "@/components/new-home/TrustStrip";
 import { createMetadata } from "@/lib/seo";
-
+import { Footer } from "@/components/layout/Footer";
 /**
  * Staging route for the Dot Truckers landing page rebuild. Deliberately NOT
  * wired into `siteConfig.navigation` and not gated behind `siteConfig.comingSoon`
@@ -25,8 +25,8 @@ export default function NewHomePage() {
       <IntroDoors />
       <TruckSequence />
       <TrustStrip />
-      <HowItWorks />
-      <NewHomeFooterCta />
+    
+      <Footer />
     </>
   );
 }

@@ -58,7 +58,7 @@ export function TrustStrip() {
               data-proof
               className="lg:border-l lg:border-on-primary/15 lg:px-8 lg:first:border-l-0 lg:first:pl-0"
             >
-              <dd className="font-ui text-3xl font-bold tracking-tight tabular-nums sm:text-4xl">
+              <dd className="font-ui text-xl font-bold tracking-tight tabular-nums md:text-4xl">
                 {item.value}
               </dd>
               <dt className="mt-2 font-ui text-xs font-semibold uppercase tracking-[0.12em] text-on-primary/60">
