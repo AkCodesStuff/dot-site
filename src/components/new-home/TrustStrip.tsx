@@ -12,10 +12,10 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /** Placeholder figures — swap for audited numbers before this goes live. */
 const PROOF = [
-  { value: "99.2%", label: "On-time delivery" },
+  { value: "32 & 34 FT.", label: "single-axle fleet" },
   { value: "24/7", label: "Control tower staffed" },
-  { value: "12", label: "Regional hubs" },
-  { value: "4.8/5", label: "Average shipper rating" },
+  { value: "7-9 MT", label: "carrying capacity" },
+  { value: "10.5 FT HQ", label: "Vehicles for more utilization" },
 ];
 
 /**

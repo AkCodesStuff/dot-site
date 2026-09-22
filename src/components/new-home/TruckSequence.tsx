@@ -45,11 +45,28 @@ const MISSION = {
  */
 const IN_NUMBER = new Intl.NumberFormat("en-IN");
 
-const STATS = [
+type Stat = {
+  value: number;
+  /** Rides straight off the digits, at the same size — the "+" in "850+". */
+  suffix?: string;
+  /** Rides off the digits at a much smaller size — "sq ft", "km". */
+  unit?: string;
+  label: string;
+};
+
+/** Beat 2, on the left while the truck holds the right lane. */
+const FLEET_STATS: Stat[] = [
   { value: 850, suffix: "+", label: "Trucks on the road" },
   { value: 90000, unit: "sq ft", label: "Truck yard" },
   { value: 265000, unit: "sq ft", label: "Warehousing in development" },
   { value: 9000, unit: "km", label: "Avg. monthly run per vehicle" },
+];
+
+/** Beat 3, on the right while the truck holds the left lane. */
+const FACILITY_STATS: Stat[] = [
+  { value: 850, suffix: "+", label: "Active vehicles" },
+  { value: 8, label: "Facilities" },
+  { value: 2, label: "Petrol pumps" },
 ];
 
 /**
@@ -153,7 +170,7 @@ export function TruckSequence() {
 
         const plan = buildTimeline(isWide, SERVICES.length);
         const { start, duration } = plan;
-        const { band, night, stats, stageText } = SEQUENCE;
+        const { band, night, stageText } = SEQUENCE;
         const width = () => stage.clientWidth;
         const height = () => stage.clientHeight;
         const vh = (value: number) => () => (height() * value) / 100;
@@ -205,76 +222,43 @@ export function TruckSequence() {
           beat2,
         );
 
-        // Each card carries its own arrival, so they can come in one after the
-        // other rather than as a single slab.
-        tl.fromTo(
-          "[data-stat]",
-          { autoAlpha: 0, x: -stats.slide },
-          {
-            autoAlpha: 1,
-            x: 0,
-            duration: duration.beat2 * (stats.in[1] - stats.in[0]),
-            ease: "power2.out",
-            stagger: stats.stagger,
-          },
-          beat2 + duration.beat2 * stats.in[0],
-        );
+        // Figures arrive from the truck's old side, so they read as filling
+        // the space it just vacated.
+        statsBeat(tl, "fleet", FLEET_STATS, beat2, duration.beat2, -1, stage);
 
-        gsap.utils
-          .toArray<HTMLElement>("[data-stat-value]", stage)
-          .forEach((el, index) => {
-            const counter = { value: 0 };
-            tl.to(
-              counter,
-              {
-                value: STATS[index].value,
-                duration: duration.beat2 * (stats.countUp[1] - stats.countUp[0]),
-                ease: "power1.out",
-                // Formatted on every frame, so the grouping settles into place
-                // as the figure climbs rather than appearing at the end.
-                onUpdate: () => {
-                  el.textContent = IN_NUMBER.format(Math.round(counter.value));
-                },
-              },
-              beat2 +
-                duration.beat2 * stats.countUp[0] +
-                index * stats.stagger,
-            );
-          });
-
-        // Gone before the truck starts moving back.
-        tl.to(
-          "[data-stat]",
-          {
-            autoAlpha: 0,
-            x: -stats.slide * 0.6,
-            duration: duration.beat2 * (stats.out[1] - stats.out[0]),
-            ease: "power2.in",
-            stagger: stats.stagger * 0.75,
-          },
-          beat2 + duration.beat2 * stats.out[0],
+        // --- Beat 3: lane change left, figures count up on the right --------
+        laneChange(tl, beat3, duration.beat3, () => -width() * lane, -tilt);
+        statsBeat(
+          tl,
+          "facility",
+          FACILITY_STATS,
+          beat3,
+          duration.beat3,
+          1,
+          stage,
         );
 
         // --- Recenter: the truck retakes the middle lane --------------------
         laneChange(tl, start.recenter, duration.recenter, () => 0, tilt);
 
-        // --- Beat 3: the closing copy, in the hero's own layout -------------
+        // --- Closing: the hero's own layout, replayed from the centre -------
         // Same component, same classes, truck in the same place the hero left
         // it — so this reads as a bookend rather than a third variation.
+        const closing = start.closing;
         tl.fromTo(
           '[data-text="closing-title"], [data-text="closing-body"]',
           { autoAlpha: 0, y: stageText.rise },
           {
             autoAlpha: 1,
             y: 0,
-            duration: duration.beat3 * (stageText.in[1] - stageText.in[0]),
+            duration: duration.closing * (stageText.in[1] - stageText.in[0]),
             ease: "power2.out",
           },
-          beat3 + duration.beat3 * stageText.in[0],
+          closing + duration.closing * stageText.in[0],
         );
 
-        const closingExit = beat3 + duration.beat3 * stageText.exitAt;
-        const closingSpan = duration.beat3 * (1 - stageText.exitAt);
+        const closingExit = closing + duration.closing * stageText.exitAt;
+        const closingSpan = duration.closing * (1 - stageText.exitAt);
         tl.to(
           "[data-truck-body]",
           { y: () => height() * drift, duration: closingSpan },
@@ -512,11 +496,20 @@ export function TruckSequence() {
           hidden
         />
 
-        {/* Beat 2's figures, on the side the truck has just left. Below `md`
-            they sit under the truck rather than beside it — there is no room
-            for a two-column grid alongside it at phone widths. */}
+        {/* Both figure sets sit on the side the truck has just left. Below
+            `md` they drop under the truck instead — there is no room for a
+            grid alongside it at phone widths. */}
         <div className="absolute bottom-[6%] left-5 right-5 z-20 md:bottom-auto md:left-[6vw] md:right-auto md:top-1/2 md:max-w-[24rem] md:-translate-y-1/2 lg:max-w-[30rem]">
-          <StatGrid animated />
+          <StatGrid id="fleet" items={FLEET_STATS} className="grid-cols-2" animated />
+        </div>
+
+        <div className="absolute bottom-[6%] left-5 right-5 z-20 md:bottom-auto md:left-auto md:right-[6vw] md:top-1/2 md:max-w-[20rem] md:-translate-y-1/2">
+          <StatGrid
+            id="facility"
+            items={FACILITY_STATS}
+            className="grid-cols-3 md:grid-cols-1 md:text-right"
+            animated
+          />
         </div>
 
         {/* Ending sits to the truck's right on wide screens. Below `md` it
@@ -607,6 +600,76 @@ function blockIn(
       ease: "power2.out",
     },
     at + beat * start,
+  );
+}
+
+/**
+ * One figure beat, start to finish: the cards arrive one after another, the
+ * numbers run, and the whole set is gone before the beat ends.
+ *
+ * `side` is -1 for a set on the left, 1 for one on the right — it only sets
+ * which way they slide, since each set is placed by CSS on the side the truck
+ * has just left. Both beats run through here, so the two behave identically
+ * however long their phases are: every window in `SEQUENCE.stats` is a
+ * fraction of the beat it is given.
+ */
+function statsBeat(
+  tl: gsap.core.Timeline,
+  id: string,
+  items: Stat[],
+  at: number,
+  beat: number,
+  side: -1 | 1,
+  scope: HTMLElement,
+) {
+  const stats = SEQUENCE.stats;
+  const cards = `[data-stat="${id}"]`;
+  const from = stats.slide * side;
+
+  tl.fromTo(
+    cards,
+    { autoAlpha: 0, x: from },
+    {
+      autoAlpha: 1,
+      x: 0,
+      duration: beat * (stats.in[1] - stats.in[0]),
+      ease: "power2.out",
+      stagger: stats.stagger,
+    },
+    at + beat * stats.in[0],
+  );
+
+  gsap.utils
+    .toArray<HTMLElement>(`[data-stat-value="${id}"]`, scope)
+    .forEach((el, index) => {
+      const counter = { value: 0 };
+      tl.to(
+        counter,
+        {
+          value: items[index].value,
+          duration: beat * (stats.countUp[1] - stats.countUp[0]),
+          ease: "power1.out",
+          // Formatted on every frame, so the grouping settles into place as
+          // the figure climbs rather than only appearing at the end.
+          onUpdate: () => {
+            el.textContent = IN_NUMBER.format(Math.round(counter.value));
+          },
+        },
+        at + beat * stats.countUp[0] + index * stats.stagger,
+      );
+    });
+
+  // Gone before the truck starts moving again.
+  tl.to(
+    cards,
+    {
+      autoAlpha: 0,
+      x: from * 0.6,
+      duration: beat * (stats.out[1] - stats.out[0]),
+      ease: "power2.in",
+      stagger: stats.stagger * 0.75,
+    },
+    at + beat * stats.out[0],
   );
 }
 
@@ -855,17 +918,28 @@ function EndingBlock() {
  * The unit rides at the end of the number line at a much smaller size, so a
  * six-digit figure plus "sq ft" still fits a column at 375px.
  */
-function StatGrid({ animated = false }: { animated?: boolean }) {
+function StatGrid({
+  id,
+  items,
+  className,
+  animated = false,
+}: {
+  /** Handle the timeline animates against: `[data-stat="<id>"]`. */
+  id: string;
+  items: Stat[];
+  className?: string;
+  animated?: boolean;
+}) {
   return (
-    <dl className="grid grid-cols-2 gap-x-5 gap-y-7 md:gap-x-8 md:gap-y-10">
-      {STATS.map((stat) => (
+    <dl className={cn("grid gap-x-5 gap-y-7 md:gap-x-8 md:gap-y-10", className)}>
+      {items.map((stat) => (
         <div
           key={stat.label}
-          data-stat={animated ? "" : undefined}
+          data-stat={animated ? id : undefined}
           className={animated ? "invisible opacity-0" : undefined}
         >
           <dd className="font-ui text-2xl font-bold tracking-tight tabular-nums sm:text-3xl lg:text-4xl">
-            <span data-stat-value={animated ? "" : undefined}>
+            <span data-stat-value={animated ? id : undefined}>
               {animated ? 0 : IN_NUMBER.format(stat.value)}
             </span>
             {stat.suffix}
@@ -910,8 +984,17 @@ function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
             </p>
           </div>
 
-          <div className="mt-16">
-            <StatGrid />
+          <div className="mt-16 grid gap-14 md:grid-cols-2">
+            <StatGrid
+              id="fleet"
+              items={FLEET_STATS}
+              className="grid-cols-2"
+            />
+            <StatGrid
+              id="facility"
+              items={FACILITY_STATS}
+              className="grid-cols-3 md:grid-cols-1"
+            />
           </div>
 
           <div className="mt-16 max-w-2xl">

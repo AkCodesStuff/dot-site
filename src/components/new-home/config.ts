@@ -39,8 +39,10 @@ export const SEQUENCE = {
     doors: 1,
     /** Mission copy parallaxes away while the truck drifts back. */
     beat1: 1,
-    /** Lane change right + the figures count up on the left. */
+    /** Lane change right + the fleet figures count up on the left. */
     beat2: 1.3,
+    /** Lane change left + the facility figures count up on the right. */
+    beat3: 1.2,
     /** Figures clear and the truck returns to the centre lane. */
     recenter: 0.6,
     /**
@@ -48,7 +50,7 @@ export const SEQUENCE = {
      * where the hero left it. Deliberately placed AFTER `recenter` — this beat
      * reads as a bookend to the opening, which only works from dead centre.
      */
-    beat3: 1.3,
+    closing: 1.3,
     /** Services band rises from below the stage until it covers it. */
     bandIn: 0.8,
     /** Band lifts away, revealing the truck parked where it started. */
@@ -123,18 +125,23 @@ export const SEQUENCE = {
   },
 
   /**
-   * Beat 2's figures. They sit on the opposite side of the stage from the lane
-   * the truck has just pulled into, so the two never contend for space.
+   * The figure beats. Both sets run on these numbers — beat 2's fleet figures
+   * on the left while the truck holds the right lane, beat 3's facility
+   * figures on the right while it holds the left. Each set always sits on the
+   * side the truck has just left, so the two never contend for space.
+   *
+   * Every window is a fraction of its OWN beat, which is why one set of
+   * numbers drives two beats of different lengths.
    */
   stats: {
-    /** Arrival and departure windows, as fractions of beat 2. */
+    /** Arrival and departure windows, as fractions of the beat. */
     in: [0.18, 0.55],
     out: [0.72, 0.92],
     /** Delay between cards, in timeline units (viewport heights). */
     stagger: 0.04,
     /** Slide distance on the way in, px. They leave on a shorter one. */
     slide: 56,
-    /** When the numbers run, as fractions of beat 2. Finishes before they go. */
+    /** When the numbers run. Finishes before the cards go. */
     countUp: [0.24, 0.72],
   },
 
@@ -234,8 +241,9 @@ const ORDER: Phase[] = [
   "doors",
   "beat1",
   "beat2",
-  "recenter",
   "beat3",
+  "recenter",
+  "closing",
   "bandIn",
   "frames",
   "bandOut",
