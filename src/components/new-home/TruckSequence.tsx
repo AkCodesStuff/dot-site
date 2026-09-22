@@ -39,15 +39,25 @@ const MISSION = {
   body: "Dot Truckers Limited runs full-truckload freight the length of the country — asset-backed capacity, and one team accountable from pickup to delivery.",
 };
 
+/**
+ * Indian digit grouping — 2,65,000 rather than 265,000. Built once because the
+ * count-up formats on every scrubbed frame.
+ */
+const IN_NUMBER = new Intl.NumberFormat("en-IN");
+
 const STATS = [
-  { value: 850, suffix: "+", label: "Trucks in the fleet" },
-  { value: 140, suffix: "+", label: "Cities served" },
-  { value: 2017, prefix: "Since ", label: "Moving India's freight" },
+  { value: 850, suffix: "+", label: "Trucks on the road" },
+  { value: 90000, unit: "sq ft", label: "Truck yard" },
+  { value: 265000, unit: "sq ft", label: "Warehousing in development" },
+  { value: 9000, unit: "km", label: "Avg. monthly run per vehicle" },
 ];
 
-const INFO = {
-  eyebrow: "Pan-India coverage",
-  title: "Every load, tracked end to end.",
+/**
+ * The closing beat's copy. Laid out exactly like `MISSION` — same component,
+ * same classes — so the sequence bookends itself.
+ */
+const CLOSING = {
+  title: "Tracked end to end.",
   body: "Each truck on the network reports its own position, so the ETA keeps itself current — no chasing drivers, and no freight going quiet between two depots.",
 };
 
@@ -143,7 +153,7 @@ export function TruckSequence() {
 
         const plan = buildTimeline(isWide, SERVICES.length);
         const { start, duration } = plan;
-        const { copy, band, night } = SEQUENCE;
+        const { band, night, stats, stageText } = SEQUENCE;
         const width = () => stage.clientWidth;
         const height = () => stage.clientHeight;
         const vh = (value: number) => () => (height() * value) / 100;
@@ -179,30 +189,10 @@ export function TruckSequence() {
           "[data-truck-body]",
           { y: () => height() * drift, duration: duration.beat1 },
           beat1,
-        )
-          .to(
-            '[data-mission="title"]',
-            { y: () => -height() * copy.rise, duration: duration.beat1 },
-            beat1,
-          )
-          .to(
-            '[data-mission="body"]',
-            {
-              y: () => -height() * copy.rise * copy.riseDamp,
-              duration: duration.beat1,
-            },
-            beat1,
-          )
-          .to(
-            '[data-mission="title"], [data-mission="body"]',
-            {
-              autoAlpha: 0,
-              duration: duration.beat1 * (1 - copy.fadeStart),
-            },
-            beat1 + duration.beat1 * copy.fadeStart,
-          );
+        );
+        stageTextExit(tl, "mission", beat1, duration.beat1, height);
 
-        // --- Beat 2: lane change right, stats count up on the left ----------
+        // --- Beat 2: lane change right, figures count up on the left --------
         laneChange(tl, beat2, duration.beat2, () => width() * lane, tilt);
         // Settle the beat-1 drift back to the middle as it goes.
         tl.to(
@@ -214,7 +204,21 @@ export function TruckSequence() {
           },
           beat2,
         );
-        blockIn(tl, '[data-block="stats"]', beat2, duration.beat2, -copy.slide);
+
+        // Each card carries its own arrival, so they can come in one after the
+        // other rather than as a single slab.
+        tl.fromTo(
+          "[data-stat]",
+          { autoAlpha: 0, x: -stats.slide },
+          {
+            autoAlpha: 1,
+            x: 0,
+            duration: duration.beat2 * (stats.in[1] - stats.in[0]),
+            ease: "power2.out",
+            stagger: stats.stagger,
+          },
+          beat2 + duration.beat2 * stats.in[0],
+        );
 
         gsap.utils
           .toArray<HTMLElement>("[data-stat-value]", stage)
@@ -224,33 +228,59 @@ export function TruckSequence() {
               counter,
               {
                 value: STATS[index].value,
-                duration:
-                  duration.beat2 * (copy.countUp[1] - copy.countUp[0]),
+                duration: duration.beat2 * (stats.countUp[1] - stats.countUp[0]),
                 ease: "power1.out",
+                // Formatted on every frame, so the grouping settles into place
+                // as the figure climbs rather than appearing at the end.
                 onUpdate: () => {
-                  el.textContent = String(Math.round(counter.value));
+                  el.textContent = IN_NUMBER.format(Math.round(counter.value));
                 },
               },
               beat2 +
-                duration.beat2 * copy.countUp[0] +
-                index * copy.countStagger,
+                duration.beat2 * stats.countUp[0] +
+                index * stats.stagger,
             );
           });
 
-        // --- Beat 3: lane change back left, info block on the right ---------
-        blockOut(tl, '[data-block="stats"]', beat3, duration.beat3, -copy.slide);
-        laneChange(tl, beat3, duration.beat3, () => -width() * lane, -tilt);
-        blockIn(tl, '[data-block="info"]', beat3, duration.beat3, copy.slide);
-
-        // --- Recenter: info clears and the truck retakes the middle lane -----
-        blockOut(
-          tl,
-          '[data-block="info"]',
-          start.recenter,
-          duration.recenter,
-          copy.slide,
+        // Gone before the truck starts moving back.
+        tl.to(
+          "[data-stat]",
+          {
+            autoAlpha: 0,
+            x: -stats.slide * 0.6,
+            duration: duration.beat2 * (stats.out[1] - stats.out[0]),
+            ease: "power2.in",
+            stagger: stats.stagger * 0.75,
+          },
+          beat2 + duration.beat2 * stats.out[0],
         );
+
+        // --- Recenter: the truck retakes the middle lane --------------------
         laneChange(tl, start.recenter, duration.recenter, () => 0, tilt);
+
+        // --- Beat 3: the closing copy, in the hero's own layout -------------
+        // Same component, same classes, truck in the same place the hero left
+        // it — so this reads as a bookend rather than a third variation.
+        tl.fromTo(
+          '[data-text="closing-title"], [data-text="closing-body"]',
+          { autoAlpha: 0, y: stageText.rise },
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: duration.beat3 * (stageText.in[1] - stageText.in[0]),
+            ease: "power2.out",
+          },
+          beat3 + duration.beat3 * stageText.in[0],
+        );
+
+        const closingExit = beat3 + duration.beat3 * stageText.exitAt;
+        const closingSpan = duration.beat3 * (1 - stageText.exitAt);
+        tl.to(
+          "[data-truck-body]",
+          { y: () => height() * drift, duration: closingSpan },
+          closingExit,
+        );
+        stageTextExit(tl, "closing", closingExit, closingSpan, height);
 
         // --- Band in: the panel rises until it covers the whole stage --------
         // Hand back the visibility the markup withholds, in the same frame the
@@ -266,6 +296,18 @@ export function TruckSequence() {
             ease: band.ease,
           },
           start.bandIn,
+        );
+
+        // Undo beat 3's drift while the band is over the stage, so the truck
+        // is back at dead centre when the band lifts off it at night.
+        tl.to(
+          "[data-truck-body]",
+          {
+            y: 0,
+            duration: duration.frames * 0.3,
+            ease: "power1.inOut",
+          },
+          start.frames,
         );
 
         // --- Frames: each one exits up-left as the next enters bottom-right --
@@ -379,7 +421,7 @@ export function TruckSequence() {
           '[data-block="ending"]',
           start.ending,
           duration.ending,
-          copy.slide,
+          SEQUENCE.copy.slide,
         );
 
         // --- Obstacles: sparse traffic the lane changes are avoiding ---------
@@ -454,29 +496,27 @@ export function TruckSequence() {
           </div>
         </Centred>
 
-        {/* Beat 1 — title top-left, body bottom-right; stacked above and below
-            the truck once the lanes get narrow. */}
-        <div className="absolute left-5 right-5 top-[10%] z-20 md:left-[6vw] md:right-auto md:top-[17%] md:max-w-[15ch]">
-          <div data-mission="title">
-            <MissionTitle />
-          </div>
-        </div>
-        <div className="absolute bottom-[10%] left-5 right-5 z-20 md:bottom-[17%] md:left-auto md:right-[6vw] md:max-w-[36ch]">
-          <div data-mission="body">
-            <MissionBody />
-          </div>
-        </div>
+        {/* Beat 1 — the opening copy, already in place behind the doors. */}
+        <StageText
+          id="mission"
+          level="h1"
+          headline={MISSION.title}
+          description={MISSION.body}
+        />
 
-        <div className="absolute   left-5 right-5 z-20 bottom-1/2 translate-y-1/2 md:bottom-auto md:left-[6vw] md:right-auto md:top-1/2 md:max-w-[24ch] md:-translate-y-1/2">
-          <div data-block="stats" className="invisible opacity-0">
-            <StatList animated />
-          </div>
-        </div>
+        {/* Beat 3 — the same layout, the same classes, played from centre. */}
+        <StageText
+          id="closing"
+          headline={CLOSING.title}
+          description={CLOSING.body}
+          hidden
+        />
 
-        <div className="absolute bottom-[9%] left-5 right-5 z-20 md:bottom-auto md:left-auto md:right-[6vw] md:top-1/2 md:max-w-[32ch] md:-translate-y-1/2">
-          <div data-block="info" className="invisible opacity-0">
-            <InfoBlock />
-          </div>
+        {/* Beat 2's figures, on the side the truck has just left. Below `md`
+            they sit under the truck rather than beside it — there is no room
+            for a two-column grid alongside it at phone widths. */}
+        <div className="absolute bottom-[6%] left-5 right-5 z-20 md:bottom-auto md:left-[6vw] md:right-auto md:top-1/2 md:max-w-[24rem] md:-translate-y-1/2 lg:max-w-[30rem]">
+          <StatGrid animated />
         </div>
 
         {/* Ending sits to the truck's right on wide screens. Below `md` it
@@ -570,24 +610,37 @@ function blockIn(
   );
 }
 
-function blockOut(
+/**
+ * The stage copy's exit: it rises faster than the truck beneath it, the
+ * description lagging the headline, and both fade on the way out.
+ *
+ * Shared by the opening and closing beats, so "same parallax as the hero" is
+ * enforced by there being one implementation rather than two that agree.
+ */
+function stageTextExit(
   tl: gsap.core.Timeline,
-  target: string,
+  id: string,
   at: number,
-  beat: number,
-  to: number,
+  span: number,
+  height: () => number,
 ) {
-  const [start, end] = SEQUENCE.copy.blockOut;
+  const { rise, riseDamp, fadeStart } = SEQUENCE.copy;
+
   tl.to(
-    target,
-    {
-      autoAlpha: 0,
-      x: to * 0.6,
-      duration: beat * (end - start),
-      ease: "power2.in",
-    },
-    at + beat * start,
-  );
+    `[data-text="${id}-title"]`,
+    { y: () => -height() * rise, duration: span },
+    at,
+  )
+    .to(
+      `[data-text="${id}-body"]`,
+      { y: () => -height() * rise * riseDamp, duration: span },
+      at,
+    )
+    .to(
+      `[data-text="${id}-title"], [data-text="${id}-body"]`,
+      { autoAlpha: 0, duration: span * (1 - fadeStart) },
+      at + span * fadeStart,
+    );
 }
 
 /** Centres a layer over the stage without putting a transform on it. */
@@ -703,16 +756,64 @@ function Obstacle({ kind }: { kind: "cone" | "barrier" }) {
   );
 }
 
-function MissionTitle() {
+/**
+ * The one description of the stage's copy type. Both the opening and closing
+ * beats read these, and so does the reduced-motion layout, so there is no
+ * second set of classes that can drift out of step.
+ */
+const STAGE_TITLE_TYPE = "text-4xl sm:text-5xl md:text-6xl lg:text-7xl";
+const STAGE_BODY_TYPE =
+  "text-sm text-right text-on-muted md:text-left md:text-lg md:leading-relaxed";
+
+/**
+ * ============================================================================
+ * STAGE TEXT
+ * ============================================================================
+ * The stage's two-corner copy layout: headline top-left, description
+ * bottom-right on wide screens; stacked above and below the truck once the
+ * lanes get narrow.
+ *
+ * Extracted so the opening beat and the closing one are the same layout by
+ * construction rather than by two sets of hand-matched classes. `id` is the
+ * handle the timeline animates against — `[data-text="<id>-title"]` and
+ * `[data-text="<id>-body"]` — which is why the positioned wrappers stay bare:
+ * GSAP moves the inner div, never the box that places it.
+ *
+ * `hidden` is for copy that has to arrive later. The hero's is simply there,
+ * waiting behind the doors.
+ */
+function StageText({
+  id,
+  headline,
+  description,
+  level = "h2",
+  hidden = false,
+}: {
+  id: string;
+  headline: string;
+  description: string;
+  level?: "h1" | "h2";
+  hidden?: boolean;
+}) {
+  const Heading = level;
+  const veil = hidden ? "invisible opacity-0" : undefined;
+
   return (
-    <h1
-      className={cn(
-        DISPLAY_HEADING,
-        "text-4xl sm:text-5xl md:text-6xl lg:text-7xl",
-      )}
-    >
-      {MISSION.title}
-    </h1>
+    <>
+      <div className="absolute left-5 right-5 top-[10%] z-20 md:left-[6vw] md:right-auto md:top-[17%] md:max-w-[15ch]">
+        <div data-text={`${id}-title`} className={veil}>
+          <Heading className={cn(DISPLAY_HEADING, STAGE_TITLE_TYPE)}>
+            {headline}
+          </Heading>
+        </div>
+      </div>
+
+      <div className="absolute bottom-[10%] left-5 right-5 z-20 md:bottom-[17%] md:left-auto md:right-[6vw] md:max-w-[36ch]">
+        <div data-text={`${id}-body`} className={veil}>
+          <p className={STAGE_BODY_TYPE}>{description}</p>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -746,52 +847,40 @@ function EndingBlock() {
   );
 }
 
-function MissionBody() {
-  return (
-    <p className="text-sm text-right md:text-left md:leading-relaxed text-on-muted md:text-lg">
-      {MISSION.body}
-    </p>
-  );
-}
-
 /**
- * `animated` renders each number as a zero for GSAP to drive; without it the
+ * Beat 2's figures, two across. `animated` renders each number as a zero for
+ * the timeline to drive and hides each card until its turn; without it the
  * finished figures are printed straight into the markup.
+ *
+ * The unit rides at the end of the number line at a much smaller size, so a
+ * six-digit figure plus "sq ft" still fits a column at 375px.
  */
-function StatList({ animated = false }: { animated?: boolean }) {
+function StatGrid({ animated = false }: { animated?: boolean }) {
   return (
-    <dl className="grid gap-4 grid-cols-1 md:gap-8">
+    <dl className="grid grid-cols-2 gap-x-5 gap-y-7 md:gap-x-8 md:gap-y-10">
       {STATS.map((stat) => (
-        <div key={stat.label}>
-          <dd className="font-ui text-3xl font-bold tracking-tight tabular-nums sm:text-4xl lg:text-5xl">
-            {stat.prefix}
+        <div
+          key={stat.label}
+          data-stat={animated ? "" : undefined}
+          className={animated ? "invisible opacity-0" : undefined}
+        >
+          <dd className="font-ui text-2xl font-bold tracking-tight tabular-nums sm:text-3xl lg:text-4xl">
             <span data-stat-value={animated ? "" : undefined}>
-              {animated ? 0 : stat.value}
+              {animated ? 0 : IN_NUMBER.format(stat.value)}
             </span>
             {stat.suffix}
+            {stat.unit ? (
+              <span className="ml-1.5 text-sm font-semibold tracking-normal text-on-muted sm:text-base">
+                {stat.unit}
+              </span>
+            ) : null}
           </dd>
-          <dt className="mt-1.5 font-ui text-xs font-semibold uppercase tracking-[0.12em] text-on-muted">
+          <dt className="mt-1.5 font-ui text-xs font-semibold uppercase tracking-[0.1em] text-on-muted">
             {stat.label}
           </dt>
         </div>
       ))}
     </dl>
-  );
-}
-
-function InfoBlock() {
-  return (
-    <div>
-      <p className="font-ui text-xs font-semibold uppercase tracking-[0.2em] text-secondary">
-        {INFO.eyebrow}
-      </p>
-      <h2 className="mt-3 text-2xl font-bold leading-tight tracking-tight text-balance sm:text-3xl lg:text-4xl">
-        {INFO.title}
-      </h2>
-      <p className="mt-3 text-base leading-relaxed text-on-muted">
-        {INFO.body}
-      </p>
-    </div>
   );
 }
 
@@ -809,16 +898,29 @@ function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
     <section ref={ref} className="relative z-0">
       <div className="bg-surface text-on-surface">
         <Container className="py-20 lg:py-28">
+          {/* The two-corner layout needs a pinned stage to make sense, so
+              here the same copy simply stacks. Type comes from the shared
+              constants, so it still matches the animated version. */}
           <div className="max-w-2xl">
-            <MissionTitle />
-            <div className=" mt-12 md:mt-6">
-              <MissionBody />
-            </div>
+            <h1 className={cn(DISPLAY_HEADING, STAGE_TITLE_TYPE)}>
+              {MISSION.title}
+            </h1>
+            <p className={cn("mt-6 md:text-left", STAGE_BODY_TYPE)}>
+              {MISSION.body}
+            </p>
           </div>
 
-          <div className="mt-16 grid gap-14 md:grid-cols-2 md:items-center">
-            <StatList />
-            <InfoBlock />
+          <div className="mt-16">
+            <StatGrid />
+          </div>
+
+          <div className="mt-16 max-w-2xl">
+            <h2 className={cn(DISPLAY_HEADING, STAGE_TITLE_TYPE)}>
+              {CLOSING.title}
+            </h2>
+            <p className={cn("mt-6 md:text-left", STAGE_BODY_TYPE)}>
+              {CLOSING.body}
+            </p>
           </div>
 
           <div className="mt-20">

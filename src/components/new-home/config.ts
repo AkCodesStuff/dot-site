@@ -39,12 +39,16 @@ export const SEQUENCE = {
     doors: 1,
     /** Mission copy parallaxes away while the truck drifts back. */
     beat1: 1,
-    /** Lane change right + stats count up on the left. */
+    /** Lane change right + the figures count up on the left. */
     beat2: 1.3,
-    /** Lane change left + info block on the right. */
-    beat3: 1.3,
-    /** Info block clears and the truck returns to the centre lane. */
+    /** Figures clear and the truck returns to the centre lane. */
     recenter: 0.6,
+    /**
+     * Closing copy, in the hero's own two-corner layout, with the truck back
+     * where the hero left it. Deliberately placed AFTER `recenter` — this beat
+     * reads as a bookend to the opening, which only works from dead centre.
+     */
+    beat3: 1.3,
     /** Services band rises from below the stage until it covers it. */
     bandIn: 0.8,
     /** Band lifts away, revealing the truck parked where it started. */
@@ -87,20 +91,51 @@ export const SEQUENCE = {
     ease: "power2.inOut",
   },
 
+  /**
+   * The two-corner stage copy — headline top-left, description bottom-right.
+   * Used by the opening beat and, unchanged, by the closing one, so the two
+   * are the same layout by construction (see `StageText`).
+   */
   copy: {
-    /** Beat-1 rise, as a fraction of stage height. The body copy rises less. */
+    /** Exit rise, as a fraction of stage height. The description rises less,
+     *  which is what makes the pair read as parallax against the truck. */
     rise: 0.42,
     riseDamp: 0.65,
-    /** How far into beat 1 the mission copy starts fading. */
+    /** How far into the exit the copy starts fading. */
     fadeStart: 0.55,
-    /** Slide-in distance for the stats and info blocks, in px. */
+    /** Slide-in distance for the ending block, in px. */
     slide: 48,
-    /** When a block arrives and leaves, as fractions of its own beat. */
+    /** When a block arrives, as fractions of its own beat. */
     blockIn: [0.22, 0.6],
-    blockOut: [0.0, 0.25],
-    /** When the numbers count up, as fractions of the beat, plus per-stat stagger. */
-    countUp: [0.3, 0.9],
-    countStagger: 0.06,
+  },
+
+  /**
+   * The closing beat's copy. It has to arrive first (the hero's was simply
+   * there behind the doors), then leave on exactly the hero's parallax.
+   */
+  stageText: {
+    /** Arrival window, as fractions of the beat. */
+    in: [0.05, 0.32],
+    /** Distance it rises through as it arrives, px. */
+    rise: 36,
+    /** When the parallax exit starts. It runs to the end of the beat. */
+    exitAt: 0.5,
+  },
+
+  /**
+   * Beat 2's figures. They sit on the opposite side of the stage from the lane
+   * the truck has just pulled into, so the two never contend for space.
+   */
+  stats: {
+    /** Arrival and departure windows, as fractions of beat 2. */
+    in: [0.18, 0.55],
+    out: [0.72, 0.92],
+    /** Delay between cards, in timeline units (viewport heights). */
+    stagger: 0.04,
+    /** Slide distance on the way in, px. They leave on a shorter one. */
+    slide: 56,
+    /** When the numbers run, as fractions of beat 2. Finishes before they go. */
+    countUp: [0.24, 0.72],
   },
 
   /**
@@ -199,8 +234,8 @@ const ORDER: Phase[] = [
   "doors",
   "beat1",
   "beat2",
-  "beat3",
   "recenter",
+  "beat3",
   "bandIn",
   "frames",
   "bandOut",
