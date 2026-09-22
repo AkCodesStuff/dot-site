@@ -251,6 +251,25 @@ export const SEQUENCE = {
     slide: 40,
   },
 
+  /**
+   * The close. The truck pulls back to centre, the copy arrives beside it,
+   * and then the truck simply drives on — up and out of the top of the frame,
+   * over the copy, which stays where it is.
+   *
+   * The exit runs from partway through the `ending` beat to the very end of
+   * `outro`, so it borrows the hold rather than needing a phase of its own.
+   */
+  ending: {
+    /** When the truck starts driving out, as a fraction of the ending beat. */
+    exitAt: 0.6,
+    /**
+     * Clearance past the top edge, px. Added on top of half the stage and
+     * half the truck's own measured height, so it always fully clears.
+     */
+    exitClearance: 48,
+    exitEase: "power1.in",
+  },
+
   intro: {
     /** Seconds for one line-art truck to cross the intro panel. Ambient, not scrubbed. */
     truckCrossing: 16,

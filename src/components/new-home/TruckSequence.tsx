@@ -450,6 +450,27 @@ export function TruckSequence() {
           SEQUENCE.copy.slide,
         );
 
+        // Then it drives on, up and out of the top. Measured off the truck's
+        // own box rather than guessed at, so it clears whatever size the art
+        // is set to. Runs to the very end of the timeline, borrowing the outro
+        // hold instead of asking for a phase of its own.
+        const truckBody = stage.querySelector<HTMLElement>("[data-truck-body]");
+        const exitAt = start.ending + duration.ending * SEQUENCE.ending.exitAt;
+        tl.to(
+          "[data-truck-body]",
+          {
+            y: () =>
+              -(
+                height() / 2 +
+                (truckBody?.offsetHeight ?? 0) / 2 +
+                SEQUENCE.ending.exitClearance
+              ),
+            duration: plan.total - exitAt,
+            ease: SEQUENCE.ending.exitEase,
+          },
+          exitAt,
+        );
+
         // --- Obstacles: sparse traffic the lane changes are avoiding ---------
         SEQUENCE.obstacles.forEach((obstacle, index) => {
           const at =
@@ -565,8 +586,12 @@ export function TruckSequence() {
             Below `md` it splits to the hero's own two corners instead — the
             box spans the same 10% insets the hero copy uses, and the flex
             column pushes the headline to the top and the description and CTA
-            to the bottom. */}
-        <div className="absolute bottom-[10%] left-5 right-5 top-[10%] z-20 md:bottom-auto md:left-auto md:right-[6vw] md:top-1/2 md:max-w-[30ch] md:-translate-y-1/2">
+            to the bottom.
+
+            `z-5` rather than the `z-20` the other copy uses: this is the one
+            block the truck drives over on its way out, so it has to sit under
+            the truck (`z-10`) while staying above the night layer. */}
+        <div className="absolute bottom-[10%] left-5 right-5 top-[10%] z-5 md:bottom-auto md:left-auto md:right-[6vw] md:top-1/2 md:max-w-[30ch] md:-translate-y-1/2">
           <div
             data-block="ending"
             className="invisible flex h-full flex-col justify-between opacity-0 md:block md:h-auto"
