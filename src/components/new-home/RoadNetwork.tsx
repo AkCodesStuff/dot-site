@@ -74,7 +74,7 @@ type Theme = "day" | "night" | "stage";
 type Motion = "page" | "drive" | "attached";
 
 /** Elements cleared as a whole box rather than text line by text line. */
-const BLOCKS = "a, button, img, article, [data-clients]";
+const BLOCKS = "a, button, img, article, [data-clients], [data-road-clear]";
 /** Never cleared: the truck is art the roads should run under, not text. */
 const IGNORE = "[data-truck-body], [data-intro-truck], [data-road-ignore]";
 

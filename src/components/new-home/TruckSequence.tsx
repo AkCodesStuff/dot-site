@@ -19,6 +19,7 @@ import {
 } from "@/components/new-home/config";
 import { ClientWall } from "@/components/new-home/ClientWall";
 import { ProcessList } from "@/components/new-home/ProcessList";
+import { ProcessRoad } from "@/components/new-home/ProcessRoad";
 import { RoadLayer } from "@/components/new-home/RoadNetwork";
 import { Barrier, TrafficCone } from "@/components/new-home/RoadArt";
 import {
@@ -566,6 +567,13 @@ export function TruckSequence() {
             </div>
           </div>
         </Centred>
+
+        {/* The process beat's title road, desktop only. Painted on the road
+            network and carried by it, so it needs no timeline of its own. Over
+            the night and the network, under the truck (`z-10`). */}
+        <div className="pointer-events-none absolute inset-0 z-5 hidden md:block">
+          <ProcessRoad />
+        </div>
 
         {/* Beat 1 — the opening copy, already in place behind the doors. */}
         <StageText

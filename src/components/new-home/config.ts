@@ -271,9 +271,21 @@ export const SEQUENCE = {
    * the only way they fit is for the truck to sit mostly out of frame.
    */
   process: {
-    /** How far LEFT the truck pulls, as a fraction of stage width. */
-    truckShift: 0.24,
+    /**
+     * How far LEFT the truck pulls, as a fraction of stage width. Desktop
+     * keeps it short of the edge so the "Our process" road fits beside it.
+     */
+    truckShift: 0.12,
     truckShiftMobile: 0.38,
+    /**
+     * The desktop-only title road (see `ProcessRoad`). It is painted on the
+     * road network and rides it down the screen, so the one thing to set is
+     * WHEN it passes: `at` is the point in the process beat, as a fraction of
+     * it, where the title crosses the middle of the screen. At 0.5 it drops in
+     * from above as the beat opens and leaves at the bottom just before the
+     * ending.
+     */
+    road: { at: 0.5 },
   },
 
   /**
