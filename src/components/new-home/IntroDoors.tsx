@@ -31,12 +31,23 @@ const LOGO_SRC =
 /**
  * The ambient traffic along the panel's floor: how wide each truck is, how far
  * up from the bottom edge it sits, and how its crossing time scales against
- * `SEQUENCE.intro.truckCrossing`. Three sizes at three heights read as depth.
+ * `SEQUENCE.intro.truckCrossing`.
+ *
+ * Bigger and faster along the bottom, smaller and slower further up, so the
+ * three lanes read as near-to-far rather than as three identical rows.
+ *
+ * Each lane carries `intro.trucksPerLane` trucks, and the ones sharing a lane
+ * share its speed and sit evenly spaced around the loop. That is what keeps
+ * the floor populated: a truck is on screen for about four fifths of its
+ * crossing, so two per lane means at least one is always visible, and three
+ * lanes never show fewer than three trucks at once. Sharing a speed is also
+ * what stops a lane's trucks from ever catching each other up — they hold the
+ * same gap forever instead of drifting into an overlap.
  */
-const TRAFFIC = [
-  { width: 104, bottom: 14, speed: 1 },
-  { width: 70, bottom: 74, speed: 1.5 },
-  { width: 88, bottom: 44, speed: 0.78 },
+const LANES = [
+  { width: 104, bottom: 10, speed: 1.35 },
+  { width: 78, bottom: 56, speed: 1 },
+  { width: 62, bottom: 94, speed: 0.72 },
 ];
 
 /**
@@ -91,19 +102,23 @@ export function IntroDoors() {
 
       // Ambient loops below. Each tween drives BOTH copies of the same element
       // at once, which is what keeps a truck crossing the seam unbroken.
-      TRAFFIC.forEach((truck, index) => {
-        const tween = gsap.fromTo(
-          `[data-intro-truck="${index}"]`,
-          { x: "-20vw" },
-          {
-            x: "110vw",
-            duration: SEQUENCE.intro.truckCrossing / truck.speed,
-            ease: "none",
-            repeat: -1,
-          },
-        );
-        // Space them out along the loop instead of releasing all three together.
-        tween.progress(index / TRAFFIC.length);
+      const perLane = SEQUENCE.intro.trucksPerLane;
+      LANES.forEach((lane, laneIndex) => {
+        for (let copy = 0; copy < perLane; copy += 1) {
+          const tween = gsap.fromTo(
+            `[data-intro-truck="${laneIndex}-${copy}"]`,
+            { x: "-20vw" },
+            {
+              x: "110vw",
+              // Shared across the lane, so its trucks hold their spacing.
+              duration: SEQUENCE.intro.truckCrossing / lane.speed,
+              ease: "none",
+              repeat: -1,
+            },
+          );
+          // Evenly spaced around the loop rather than released together.
+          tween.progress(copy / perLane);
+        }
       });
 
       gsap.to("[data-intro-chevron]", {
@@ -225,17 +240,19 @@ function DoorFace() {
         <ChevronDown className="h-6 w-6" />
       </div>
 
-      {TRAFFIC.map((truck, index) => (
-        <div
-          key={index}
-          data-intro-truck={index}
-          aria-hidden="true"
-          className="absolute left-0 text-on-background/25"
-          style={{ bottom: truck.bottom, width: truck.width }}
-        >
-          <LineTruck className="w-full" />
-        </div>
-      ))}
+      {LANES.map((lane, laneIndex) =>
+        Array.from({ length: SEQUENCE.intro.trucksPerLane }, (_, copy) => (
+          <div
+            key={`${laneIndex}-${copy}`}
+            data-intro-truck={`${laneIndex}-${copy}`}
+            aria-hidden="true"
+            className="absolute left-0 text-on-background/25"
+            style={{ bottom: lane.bottom, width: lane.width }}
+          >
+            <LineTruck className="w-full" />
+          </div>
+        )),
+      )}
     </div>
   );
 }

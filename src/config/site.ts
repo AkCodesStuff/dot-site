@@ -24,7 +24,7 @@ export type NavItem = {
 
 export const siteConfig = {
   /** Legal / full company name. Used in structured data and the footer. */
-  name: "DOT Logistics",
+  name: "DOT",
   /** Short name used in the wordmark and the browser title template. */
   shortName: "DOT",
   /** One-line positioning statement. Feeds the default meta description. */

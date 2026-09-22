@@ -364,6 +364,14 @@ export const SEQUENCE = {
   intro: {
     /** Seconds for one line-art truck to cross the intro panel. Ambient, not scrubbed. */
     truckCrossing: 16,
+    /**
+     * Trucks in each of the intro panel's three lanes, spaced evenly around
+     * the loop. A truck is on screen for roughly four fifths of its crossing,
+     * so two per lane keeps at least one visible in every lane at all times —
+     * three on the floor at the thinnest moment. Raise it to thicken the
+     * traffic further; the lanes themselves are in `IntroDoors`.
+     */
+    trucksPerLane: 2,
   },
 } as const;
 
