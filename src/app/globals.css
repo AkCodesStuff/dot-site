@@ -407,3 +407,53 @@
     display: none;
   }
 }
+
+/* ============================================================================
+   ROAD NETWORK — the map texture behind /new-home.
+   ----------------------------------------------------------------------------
+   Drawn in palette ink only: DOT Black on light sections, DOT White on dark
+   ones. The strength of each stroke is not set here — it arrives as an
+   opacity custom property from `ROADS.opacity` in `new-home/config.ts`, set on
+   each `<use>` of the shared geometry, so day and night can each be tuned
+   without touching this file.
+
+   The mask classes only feed an SVG luminance mask (white shows the roads,
+   black hides them); they are never seen as colour.
+   ========================================================================== */
+.road-day {
+  --road-ink: var(--dot-black);
+}
+
+.road-night {
+  --road-ink: var(--dot-white);
+}
+
+.road-minor,
+.road-major {
+  fill: none;
+  stroke: var(--road-ink);
+  vector-effect: non-scaling-stroke;
+}
+
+.road-minor {
+  stroke-width: 1px;
+  stroke-opacity: var(--road-minor-alpha);
+}
+
+.road-major {
+  stroke-width: 1.5px;
+  stroke-opacity: var(--road-major-alpha);
+}
+
+.road-depot {
+  fill: var(--road-ink);
+  fill-opacity: var(--road-depot-alpha);
+}
+
+.road-mask-base {
+  fill: var(--dot-white);
+}
+
+.road-mask-hole {
+  fill: var(--dot-black);
+}

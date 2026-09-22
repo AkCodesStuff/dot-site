@@ -272,7 +272,7 @@ export const SEQUENCE = {
    */
   process: {
     /** How far LEFT the truck pulls, as a fraction of stage width. */
-    truckShift: 0.3,
+    truckShift: 0.24,
     truckShiftMobile: 0.38,
   },
 
@@ -373,6 +373,43 @@ export const SEQUENCE = {
      */
     trucksPerLane: 2,
   },
+} as const;
+
+/**
+ * ============================================================================
+ * ROAD NETWORK — the abstract map texture behind the whole page
+ * ============================================================================
+ * Generated from `seed`, so it is the same network on every load; a resize
+ * regenerates it from the same seed at the new size. Densities are per
+ * viewport height of network. Opacities are stroke/fill opacities of the
+ * palette ink the section's theme picks (black by day, white at night) — the
+ * inks themselves are tokens in `globals.css`, like every other colour.
+ */
+export const ROADS = {
+  seed: 20260922,
+  /** Highways per viewport height, counting the trunk that runs the full page. */
+  highwaysPerViewport: [1, 2],
+  /** Thin secondary roads per viewport height. */
+  roadsPerViewport: [8, 12],
+  /** Share of the desktop density used below `md`. */
+  mobileDensity: 0.6,
+  /** Centre-to-centre gap between a highway's two carriageways, px. */
+  highwayGap: 8,
+  /** Chance that a junction gets a depot dot, and the dot's radius range. */
+  depotChance: 0.4,
+  depotRadius: [2.5, 3.5],
+  opacity: {
+    day: { road: 0.09, highway: 0.14, depot: 0.22 },
+    night: { road: 0.07, highway: 0.12, depot: 0.25 },
+  },
+  /**
+   * Clearance around text, logos and buttons. Roads are fully gone within
+   * `padding - feather / 2` of the content and back to full strength at
+   * `padding + feather / 2`, stepping down through `steps` soft rings.
+   */
+  mask: { padding: 40, feather: 40, steps: 6 },
+  /** Network speed relative to the page. 1 under reduced motion. */
+  parallax: 0.9,
 } as const;
 
 export type Phase = keyof typeof SEQUENCE.phases | "frames";

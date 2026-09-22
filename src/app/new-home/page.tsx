@@ -1,6 +1,7 @@
 import { HowItWorks } from "@/components/new-home/HowItWorks";
 import { IntroDoors } from "@/components/new-home/IntroDoors";
 import { NewHomeFooterCta } from "@/components/new-home/NewHomeFooterCta";
+import { RoadNetwork } from "@/components/new-home/RoadNetwork";
 import { TruckSequence } from "@/components/new-home/TruckSequence";
 import { TrustStrip } from "@/components/new-home/TrustStrip";
 import { createMetadata } from "@/lib/seo";
@@ -21,12 +22,12 @@ export const metadata = createMetadata({
 
 export default function NewHomePage() {
   return (
-    <>
+    <RoadNetwork>
       <IntroDoors />
       <TruckSequence />
       <TrustStrip />
     
       <Footer />
-    </>
+    </RoadNetwork>
   );
 }

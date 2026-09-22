@@ -139,7 +139,7 @@ function ProcessWheel() {
           // `origin-left` so a shrinking step stays anchored on the arc
           // instead of drifting toward its own centre. The timeline writes the
           // transform directly, including the -50% that centres it.
-          className="absolute left-0 top-1/2 flex origin-left items-start gap-2.5 whitespace-nowrap md:w-56 md:gap-3 md:whitespace-normal"
+          className="absolute left-0 top-1/2 flex origin-left items-start gap-2.5 whitespace-nowrap md:w-56 md:gap-3 md:whitespace-normal lg:w-72"
         >
           <span className="font-ui text-[0.65rem] font-semibold tabular-nums text-accent md:mt-0.5">
             {String(index + 1).padStart(2, "0")}
@@ -149,7 +149,7 @@ function ProcessWheel() {
             className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent md:mt-1.5"
           />
           <div className="min-w-0">
-            <h3 className="font-ui text-sm font-bold uppercase tracking-[0.12em] text-on-primary">
+            <h3 className="font-ui text-sm font-bold uppercase tracking-[0.12em] text-on-primary lg:text-base">
               {step.name}
             </h3>
             <p className="mt-1 hidden text-sm leading-snug text-on-primary/60 md:block">

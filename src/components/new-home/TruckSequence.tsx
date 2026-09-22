@@ -19,6 +19,7 @@ import {
 } from "@/components/new-home/config";
 import { ClientWall } from "@/components/new-home/ClientWall";
 import { ProcessList } from "@/components/new-home/ProcessList";
+import { RoadLayer } from "@/components/new-home/RoadNetwork";
 import { Barrier, TrafficCone } from "@/components/new-home/RoadArt";
 import {
   SERVICES,
@@ -539,6 +540,11 @@ export function TruckSequence() {
           className="pointer-events-none absolute inset-0 bg-primary opacity-0"
         />
 
+        {/* The road network. After the night layer so it stays visible when
+            the stage goes dark, and before everything else so it sits under
+            the truck and every piece of copy. */}
+        <RoadLayer theme="stage" motion="drive" />
+
         {SEQUENCE.obstacles.map((obstacle, index) => (
           <Centred key={index}>
             {/* `opacity-0` only covers the gap before GSAP parks these above
@@ -580,7 +586,7 @@ export function TruckSequence() {
         {/* Both figure sets sit on the side the truck has just left. Below
             `md` they drop under the truck instead — there is no room for a
             grid alongside it at phone widths. */}
-        <div className="absolute bottom-1/2 translate-y-1/2 left-5 right-5 z-20 md:bottom-auto md:left-[6vw] md:right-auto md:top-1/2 md:max-w-[24rem] md:-translate-y-1/2 lg:max-w-[30rem]">
+        <div className="absolute bottom-1/2 translate-y-1/2 left-5 right-5 z-20 md:bottom-auto md:left-[6vw] md:right-auto md:top-1/2 md:max-w-[24rem] md:-translate-y-1/2 lg:max-w-[34rem]">
           <StatGrid id="fleet" items={FLEET_STATS} className="grid-cols-1 md:grid-cols-2 max-w-40 md:max-w-none" animated />
         </div>
 
@@ -599,7 +605,7 @@ export function TruckSequence() {
         {/* The wheel's frame. It spans the stage at every width because the arc
             needs real height to sweep through; only the width changes, and the
             width is what sets the radius (see `wheel.radius*`). */}
-        <div className="absolute bottom-[8%] right-0 top-[8%] z-20 w-[72%] md:right-[3vw] md:w-[52%] lg:w-[42%]">
+        <div className="absolute bottom-[8%] right-0 top-[8%] z-20 w-[72%] md:right-[4vw] md:w-[52%] lg:right-[7vw] lg:w-[44%]">
           <ProcessList animated />
         </div>
 
@@ -621,7 +627,7 @@ export function TruckSequence() {
             `z-5` rather than the `z-20` the other copy uses: this is the one
             block the truck drives over on its way out, so it has to sit under
             the truck (`z-10`) while staying above the night layer. */}
-        <div className="absolute bottom-[10%] left-5 right-5 top-[10%] z-5 md:bottom-auto md:left-auto md:right-[6vw] md:top-1/2 md:max-w-[30ch] md:-translate-y-1/2">
+        <div className="absolute bottom-[10%] left-5 right-5 top-[10%] z-5 md:bottom-auto md:left-auto md:right-[6vw] md:top-1/2 md:max-w-[30ch] md:-translate-y-1/2 lg:max-w-[22rem] xl:max-w-[28rem] 2xl:max-w-[32rem]">
           <div
             data-block="ending"
             className="invisible flex h-full flex-col justify-between opacity-0 md:block md:h-auto"
@@ -1061,7 +1067,7 @@ function StageText({
 
   return (
     <>
-      <div className="absolute left-5 right-5 top-[10%] z-20 md:left-[6vw] md:right-auto md:top-[17%] md:max-w-[15ch]">
+      <div className="absolute left-5 right-5 top-[10%] z-20 md:left-[15vw] md:right-auto md:top-[17%] md:max-w-[40ch]">
         <div data-text={`${id}-title`} className={veil}>
           <Heading className={cn(DISPLAY_HEADING, STAGE_TITLE_TYPE)}>
             {headline}
@@ -1093,7 +1099,7 @@ function EndingBlock() {
 
       {/* `mt-4` is for the stacked reduced-motion layout. In the flex column
           it is absorbed by the free space and changes nothing. */}
-      <div className="mt-4 text-right md:text-left">
+      <div className="mt-4 text-right md:mt-6 md:text-left">
         <p className="text-sm text-on-primary/70 md:text-lg md:leading-relaxed">
           {ENDING.body}
         </p>
@@ -1170,7 +1176,8 @@ function StatGrid({
 function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
   return (
     <section ref={ref} className="relative z-0">
-      <div className="bg-surface text-on-surface">
+      <div className="relative isolate bg-surface text-on-surface">
+        <RoadLayer theme="day" className="-z-10" />
         <Container className="py-20 lg:py-28">
           {/* The two-corner layout needs a pinned stage to make sense, so
               here the same copy simply stacks. Type comes from the shared
@@ -1212,10 +1219,12 @@ function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
         </Container>
       </div>
 
-      <div className="bg-primary text-on-primary">
+      <div className="relative isolate bg-primary text-on-primary">
+        <RoadLayer theme="night" className="-z-10" />
         <Container className="py-20 lg:py-28">
           <div className="flex justify-center">
             <div
+              data-road-ignore
               className="relative z-20"
               style={
                 { "--truck-h": `${SEQUENCE.truck.height}px` } as CSSProperties

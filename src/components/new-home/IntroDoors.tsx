@@ -9,6 +9,7 @@ import { useRef } from "react";
 import { Wordmark } from "@/components/layout/Logo";
 import { SEQUENCE } from "@/components/new-home/config";
 import { ChevronDown, LineTruck } from "@/components/new-home/RoadArt";
+import { RoadLayer } from "@/components/new-home/RoadNetwork";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 import { cn } from "@/lib/utils";
 
@@ -136,7 +137,8 @@ export function IntroDoors() {
   // section at the top of the page, which the visitor simply scrolls past.
   if (reduced) {
     return (
-      <section className="flex min-h-[70vh] flex-col items-center justify-center gap-7 bg-background px-6 py-24 text-on-background">
+      <section className="relative isolate flex min-h-[70vh] flex-col items-center justify-center gap-7 bg-background px-6 py-24 text-on-background">
+        <RoadLayer theme="day" className="-z-10" />
         <div className="flex items-center gap-5">
           <Image
             src={LOGO_SRC}
@@ -196,7 +198,15 @@ export function IntroDoors() {
 function DoorFace() {
   return (
     <div className="relative h-full w-full">
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-7 px-6">
+      {/* Painted on the door, so it leaves with it. Both doors place it by
+          the same rule as the stage behind, so the closed panel lines up
+          with the network that the opening reveals. */}
+      <RoadLayer theme="day" isolated />
+
+      {/* `md:pb-32` centres the lockup in the space above the chevron and the
+          traffic lanes rather than in the full panel, which left it sitting
+          visibly low on a desktop screen. */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center gap-7 px-6 md:pb-32">
         {/* The lockup straddles the seam: the mark takes the left half's inner
             edge, the wordmark the right half's. Both doors render this same
             row and clip it to their own side, so the split falls exactly

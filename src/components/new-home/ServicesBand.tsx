@@ -2,6 +2,7 @@ import {
   BAND_CLIP_PATH,
   BAND_HEIGHT_VH,
 } from "@/components/new-home/config";
+import { RoadLayer } from "@/components/new-home/RoadNetwork";
 import { cn } from "@/lib/utils";
 
 /** Placeholder line-up — swap the copy once the real service set is settled. */
@@ -61,7 +62,9 @@ export function ServicesBand() {
       className="invisible absolute inset-x-0 top-0 z-30 bg-primary text-on-primary"
       style={{ height: `${BAND_HEIGHT_VH}vh`, clipPath: BAND_CLIP_PATH }}
     >
-      <p className="absolute inset-x-0 top-1/2 translate-y-[-38vh] text-center font-ui text-xs font-semibold uppercase tracking-[0.2em] text-on-secondary/50">
+      <RoadLayer theme="night" motion="attached" />
+
+      <p className="absolute inset-x-0 top-1/2 translate-y-[-38vh] text-center lg:translate-y-[-30vh] font-ui text-xs font-semibold uppercase tracking-[0.2em] text-on-secondary/50">
         What we run
       </p>
 
@@ -73,13 +76,13 @@ export function ServicesBand() {
             // Wide layout pairs the cards up, so even indices take the left
             // half of the stage and odd indices the right.
             index % 2 === 0
-              ? "lg:right-1/2 lg:justify-end lg:pr-4"
-              : "lg:left-1/2 lg:justify-start lg:pl-4",
+              ? "lg:right-1/2 lg:justify-end lg:pr-5"
+              : "lg:left-1/2 lg:justify-start lg:pl-5",
           )}
         >
           <div
             data-card={index}
-            className="invisible w-full max-w-md opacity-0 lg:max-w-sm"
+            className="invisible w-full max-w-md opacity-0"
           >
             <ServiceCard index={index} service={service} />
           </div>
@@ -91,7 +94,7 @@ export function ServicesBand() {
 
 function ServiceCard({ index, service }: { index: number; service: Service }) {
   return (
-    <article className="rounded-2xl border border-on-secondary/20 bg-on-secondary/5 p-7 sm:p-8">
+    <article className="rounded-2xl border border-on-secondary/20 bg-on-secondary/5 p-7 sm:p-8 lg:p-10">
       <div className="flex items-center justify-between">
         <span className="font-ui text-sm font-bold tracking-[0.2em] text-accent">
           {String(index + 1).padStart(2, "0")}

@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useRef } from "react";
 
+import { RoadLayer } from "@/components/new-home/RoadNetwork";
 import { Container } from "@/components/ui/Container";
 import { usePrefersReducedMotion } from "@/lib/use-reduced-motion";
 
@@ -49,14 +50,18 @@ export function TrustStrip() {
   );
 
   return (
-    <section ref={sectionRef} className="bg-primary text-on-primary">
+    <section
+      ref={sectionRef}
+      className="relative isolate bg-primary text-on-primary"
+    >
+      <RoadLayer theme="night" className="-z-10" />
       <Container className="py-14 lg:py-16">
         <dl className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-0">
           {PROOF.map((item) => (
             <div
               key={item.label}
               data-proof
-              className="lg:border-l lg:border-on-primary/15 lg:px-8 lg:first:border-l-0 lg:first:pl-0"
+              className="lg:border-l lg:border-on-primary/15 lg:px-8 lg:first:border-l-0 lg:first:pl-0 lg:last:pr-0"
             >
               <dd className="font-ui text-xl font-bold tracking-tight tabular-nums md:text-4xl">
                 {item.value}

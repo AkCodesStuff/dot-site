@@ -48,7 +48,7 @@ export function ClientWall({ animated = false }: { animated?: boolean }) {
       data-clients
       className="client-wall invisible h-full w-full overflow-hidden opacity-0"
     >
-      <div className="flex h-full flex-col justify-center gap-4 md:gap-6">
+      <div className="flex h-full flex-col justify-center gap-4 md:gap-6 lg:gap-8">
         {rows.map((row, index) => (
           <div
             key={index}
@@ -87,15 +87,15 @@ function Logo({
   return (
     <div
       className={cn(
-        "relative h-8 w-24 shrink-0 md:h-10 md:w-28",
-        spaced && "mx-3 md:mx-4",
+        "relative h-8 w-24 shrink-0 md:h-10 md:w-28 lg:h-12 lg:w-32",
+        spaced && "mx-3 md:mx-4 lg:mx-5",
       )}
     >
       <Image
         src={client.src}
         alt={duplicate ? "" : client.name}
         fill
-        sizes="112px"
+        sizes="(min-width: 64rem) 128px, 112px"
         className="object-contain opacity-70 brightness-0 invert"
       />
     </div>
