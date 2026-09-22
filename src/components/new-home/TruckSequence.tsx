@@ -17,6 +17,7 @@ import {
   WIDE_QUERY,
   type TimelinePlan,
 } from "@/components/new-home/config";
+import { ClientWall } from "@/components/new-home/ClientWall";
 import { ProcessList } from "@/components/new-home/ProcessList";
 import { Barrier, TrafficCone } from "@/components/new-home/RoadArt";
 import {
@@ -148,6 +149,26 @@ export function TruckSequence() {
       if (!stage || !section) return;
 
       const mm = gsap.matchMedia();
+
+      // The client marquee. Ambient rather than scrubbed, and outside
+      // `matchMedia` so a breakpoint change does not restart it mid-pass. Each
+      // row slides exactly half its own doubled width, alternating direction.
+      gsap.utils
+        .toArray<HTMLElement>("[data-marquee-row]")
+        .forEach((row, index) => {
+          const leftward = index % 2 === 0;
+          gsap.fromTo(
+            row,
+            { xPercent: leftward ? 0 : -50 },
+            {
+              xPercent: leftward ? -50 : 0,
+              duration:
+                SEQUENCE.clients.drift + index * SEQUENCE.clients.driftStep,
+              ease: "none",
+              repeat: -1,
+            },
+          );
+        });
 
       const queries = {
         isDesktop: DESKTOP_QUERY,
@@ -458,6 +479,26 @@ export function TruckSequence() {
         // own box rather than guessed at, so it clears whatever size the art
         // is set to. Runs to the very end of the timeline, borrowing the outro
         // hold instead of asking for a phase of its own.
+        // The client wall arrives on the same breath, from below on desktop
+        // and in from the side below `md`. The copy between them does not move.
+        const clients = SEQUENCE.clients;
+        tl.fromTo(
+          "[data-clients]",
+          {
+            autoAlpha: 0,
+            y: isDesktop ? clients.rise : 0,
+            x: isDesktop ? 0 : -clients.slideMobile,
+          },
+          {
+            autoAlpha: 1,
+            y: 0,
+            x: 0,
+            duration: duration.ending * (clients.in[1] - clients.in[0]),
+            ease: "power2.out",
+          },
+          start.ending + duration.ending * clients.in[0],
+        );
+
         const truckBody = stage.querySelector<HTMLElement>("[data-truck-body]");
         const exitAt = start.ending + duration.ending * SEQUENCE.ending.exitAt;
         tl.to(
@@ -587,6 +628,15 @@ export function TruckSequence() {
             centred on it. From `md` it collapses back to the list's box. */}
         <div className="absolute bottom-[8%] right-0 top-[8%] z-20 w-[72%] md:bottom-auto md:right-[5vw] md:top-1/2 md:w-auto md:max-w-[26rem] md:-translate-y-1/2 lg:max-w-[38rem]">
           <ProcessList animated />
+        </div>
+
+        {/* The client wall. On wide screens it takes the left half, opposite
+            the closing copy. Below `md` it fills the band between the headline
+            and the bottom group — those insets are eyeballed against the two
+            blocks' heights, so retune them if that copy changes length.
+            `z-5` with the copy, so the departing truck passes over both. */}
+        <div className="absolute bottom-[36%] left-5 right-5 top-[24%] z-5 md:bottom-auto md:left-[6vw] md:right-auto md:top-1/2 md:h-[56%] md:w-[40%] md:-translate-y-1/2">
+          <ClientWall animated />
         </div>
 
         {/* Ending sits as one stack to the truck's right on wide screens.
@@ -1207,6 +1257,10 @@ function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
 
           <div className="mt-16 max-w-2xl">
             <EndingBlock />
+          </div>
+
+          <div className="mt-16">
+            <ClientWall />
           </div>
         </Container>
       </div>

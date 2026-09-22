@@ -322,6 +322,44 @@
     color-mix(in srgb, var(--taillight) 55%, transparent);
 }
 
+/* The client wall's soft edges. Masked on both axes and intersected, so the
+   panel dissolves on all four sides instead of ending on a hard rectangle —
+   which is what lets a marquee run through it without the logos visibly
+   popping in and out at the boundary. The colour is irrelevant to a mask (only
+   its alpha is read); it uses a palette token purely to avoid a stray literal. */
+.client-wall {
+  -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      var(--dot-black) 14%,
+      var(--dot-black) 86%,
+      transparent
+    ),
+    linear-gradient(
+      to bottom,
+      transparent,
+      var(--dot-black) 16%,
+      var(--dot-black) 84%,
+      transparent
+    );
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(
+      to right,
+      transparent,
+      var(--dot-black) 14%,
+      var(--dot-black) 86%,
+      transparent
+    ),
+    linear-gradient(
+      to bottom,
+      transparent,
+      var(--dot-black) 16%,
+      var(--dot-black) 84%,
+      transparent
+    );
+  mask-composite: intersect;
+}
+
 .night-lit .night-beam {
   opacity: 1;
   transform: scaleY(1);

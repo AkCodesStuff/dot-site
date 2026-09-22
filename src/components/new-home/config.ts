@@ -16,6 +16,38 @@
  * by `buildTimeline()` rather than being a fixed constant.
  */
 
+/**
+ * The client wall shown under the closing copy. Order is the order they
+ * appear, which is also the order they are dealt into marquee rows — adjacent
+ * entries end up on the same row, so reorder here to change who sits together.
+ */
+export const CLIENTS = [
+  { name: "Mahindra", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061528/mahindra.png" },
+  { name: "MRF Tyres", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061528/mrf-tyres.png" },
+  { name: "Myntra", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061528/myntra.png" },
+  { name: "Meesho", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061528/meesho.png" },
+  { name: "Godrej", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061528/godrej.png" },
+  { name: "Hero Cycles", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061528/hero-cycles.png" },
+  { name: "Xpressbees", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061528/xpressbees.png" },
+  { name: "Wakefit", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061527/wakefit.png" },
+  { name: "Whirlpool", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061528/whirlpool.png" },
+  { name: "Flipkart", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061528/flipkart.png" },
+  { name: "DP World", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061527/dp-world.png" },
+  { name: "TVS Tyres", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061527/tvs-tyres.png" },
+  { name: "Delhivery", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061527/delhivery.png" },
+  { name: "Cornitos", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061526/cornitos.png" },
+  { name: "TTK Prestige", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061527/ttk-prestige.png" },
+  { name: "Crax", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061526/crax.png" },
+  { name: "DHL", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061527/dhl.png" },
+  { name: "Orient Electric", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061525/orient-electric.png" },
+  { name: "Shadowfax", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061526/shadowfax.png" },
+  { name: "Bajaj Electricals", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061526/bajaj-electricals.png" },
+  { name: "Samsung", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061526/samsung.png" },
+  { name: "Amazon", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061525/amazon.png" },
+  { name: "Allcargo", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061525/allcargo.png" },
+  { name: "Attero", src: "https://res.cloudinary.com/js6wkdfq/image/upload/v1790061525/attero.png" },
+];
+
 /** Matches Tailwind's `md:` — copy blocks move beside the truck from here up. */
 export const DESKTOP_QUERY = "(min-width: 48rem)";
 export const MOBILE_QUERY = "(max-width: 47.999rem)";
@@ -289,6 +321,32 @@ export const SEQUENCE = {
    * The exit runs from partway through the `ending` beat to the very end of
    * `outro`, so it borrows the hold rather than needing a phase of its own.
    */
+  /**
+   * The client wall. It arrives as the truck starts leaving, so the closing
+   * copy is the one thing that does not move — the truck goes up, the logos
+   * come in, the words stay put.
+   *
+   * The marquee itself is ambient, not scrubbed: a wall of logos that only
+   * slides while you happen to be scrolling reads as broken rather than
+   * alive. Everything else on this page is scroll-driven; this is the one
+   * deliberate exception, same as the intro panel's traffic.
+   */
+  clients: {
+    /**
+     * Arrival window, as fractions of the ending beat. Over 1 reaches into the
+     * outro, which is exactly where the truck is still clearing the frame.
+     */
+    in: [0.6, 1.35],
+    /** Travel on the way in: up from below on desktop, in from the side below `md`. */
+    rise: 120,
+    slideMobile: 220,
+    /** Rows the logos are dealt into. They alternate direction. */
+    rows: 4,
+    /** Seconds for one full marquee pass, and how much each row differs. */
+    drift: 30,
+    driftStep: 4,
+  },
+
   ending: {
     /** When the truck starts driving out, as a fraction of the ending beat. */
     exitAt: 0.6,
@@ -323,6 +381,7 @@ const ORDER: Phase[] = [
   "ending",
   "outro",
 ];
+
 
 export type TimelinePlan = {
   /** Absolute timeline time each phase begins, in viewport heights. */
