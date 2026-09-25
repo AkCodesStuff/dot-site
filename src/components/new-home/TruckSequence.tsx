@@ -943,10 +943,13 @@ function Truck() {
     <Image
       src={TRUCK_SRC}
       alt="A Dot Truckers long-haul truck seen from above"
-      width={400}
-      height={400}
+      // The art's own pixels, so its shape is never guessed at. Only the
+      // WIDTH is set below; `h-auto` keeps the height in proportion, which a
+      // `size-*` (or an h + w pair) would override and squash.
+      width={1024}
+      height={1536}
       priority
-      className=" rotate-180 "
+      className="h-auto w-65 rotate-180 md:w-100"
     />
   );
 }
@@ -1241,10 +1244,10 @@ function StaticSequence({ ref }: { ref: Ref<HTMLElement> }) {
               <Image
                 src={TRUCK_SRC}
                 alt="A Dot Truckers long-haul truck seen from above"
-                width={500}
-                height={500}
+                width={1024}
+                height={1536}
                 priority
-                className="h-(--truck-h) w-(--truck-h) rotate-180"
+                className="h-auto w-(--truck-h) rotate-180"
               />
               <Headlights lit />
             </div>
