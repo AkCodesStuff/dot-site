@@ -32,7 +32,7 @@ const HEADLINE = {
   accent: "Upgrading",
 };
 const HEADLINE_TYPE =
-  "font-headline text-[13vw] font-bold uppercase leading-none tracking-tight sm:text-[9vw]";
+  "font-headline text-[13vw] font-bold uppercase leading-none tracking-tight sm:text-[6vw]";
 
 /** The mark on its own. Black on transparency, so it needs a light panel. */
 const LOGO_SRC =
@@ -245,25 +245,22 @@ function DoorFace() {
           traffic lanes rather than in the full panel, which left it sitting
           visibly low on a desktop screen. */}
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-7 px-6 md:pb-32">
-        {/* The lockup straddles the seam: the mark takes the left half's inner
-            edge, the wordmark the right half's. Both doors render this same
-            row and clip it to their own side, so the split falls exactly
-            between the two — never through a glyph. The row is symmetric, so
-            its midpoint stays on the centre line whatever the padding. */}
-        <div className="flex w-full items-center">
-          <div className="flex w-1/2 justify-end pr-5 sm:pr-7">
-            <Image
-              src={LOGO_SRC}
-              alt=""
-              width={204}
-              height={203}
-              priority
-              className="h-16 w-16 sm:h-24 sm:w-24"
-            />
-          </div>
-          <div className="flex w-1/2 justify-start pl-5 sm:pl-7">
+        {/* Centred on the viewport, so the seam runs down the middle of the
+            mark and each door leaves with half of it — the same way the
+            headline below splits. Both doors render this same row and clip it
+            to their own side. */}
+        <div className="flex w-full items-center justify-center">
+          <Image
+            src={LOGO_SRC}
+            alt=""
+            width={204}
+            height={203}
+            priority
+            className="h-16 w-16 sm:h-24 sm:w-24 "
+          />
+          {/* <div className="flex w-1/2 justify-start pl-5 sm:pl-7">
             <Wordmark className="text-6xl sm:text-8xl" />
-          </div>
+          </div> */}
         </div>
 
         {/* Same seam, same trick: both words live in the DOM of both doors, so
