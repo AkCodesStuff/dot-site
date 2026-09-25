@@ -36,7 +36,7 @@ gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /** Bird's-eye truck art. Drawn facing down, so it is flipped 180° to drive up. */
 const TRUCK_SRC =
-  "https://res.cloudinary.com/js6wkdfq/image/upload/v1790004026/Untitled_design-removebg-preview.png";
+  "https://res.cloudinary.com/js6wkdfq/image/upload/v1790004026/dot-truck-2.png";
 
 const MISSION = {
   title: "Built for the long haul.",
@@ -943,8 +943,8 @@ function Truck() {
     <Image
       src={TRUCK_SRC}
       alt="A Dot Truckers long-haul truck seen from above"
-      width={600}
-      height={600}
+      width={400}
+      height={400}
       priority
       className=" rotate-180 "
     />
