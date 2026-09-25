@@ -16,14 +16,23 @@ import { cn } from "@/lib/utils";
 gsap.registerPlugin(useGSAP, ScrollTrigger);
 
 /**
- * Split across the seam: the lead rides the left door, the accented half the
- * right. Sized in `vw` rather than at breakpoints because each half only ever
- * gets 50vw to print in — a fixed ramp either overflows the narrow end or
+ * One word per line, each centred on the viewport — so the seam runs through
+ * the middle of BOTH words and each one leaves half on either door, rather
+ * than the two words sitting either side of the split with a hole between
+ * them. Sized in `vw` rather than at breakpoints because a line now has the
+ * whole viewport to print in: a fixed ramp either overflows the narrow end or
  * leaves the wide end looking timid.
+ *
+ * The lead is kept in two pieces so its apostrophe can be placed on the seam
+ * itself — see `Headline`.
  */
-const HEADLINE = { lead: "We’re", accent: "Upgrading" };
+const HEADLINE = {
+  lead: ["We", "re"],
+  apostrophe: "’",
+  accent: "Upgrading",
+};
 const HEADLINE_TYPE =
-  "font-headline text-[6vw] font-bold uppercase leading-none tracking-tight";
+  "font-headline text-[13vw] font-bold uppercase leading-none tracking-tight sm:text-[9vw]";
 
 /** The mark on its own. Black on transparency, so it needs a light panel. */
 const LOGO_SRC =
@@ -150,13 +159,7 @@ export function IntroDoors() {
           />
           <Wordmark className="text-[6vw]" />
         </div>
-        <p className={cn("text-center", HEADLINE_TYPE)}>
-          {HEADLINE.lead}{" "}
-          <span className="text-accent">
-            {HEADLINE.accent}
-            <span className="text-on-background">.</span>
-          </span>
-        </p>
+        <Headline />
       </section>
     );
   }
@@ -191,6 +194,41 @@ export function IntroDoors() {
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * The panel's line of copy: one word per line, both centred on the viewport.
+ * Centring is the whole point — it is what puts the middle of each word on the
+ * seam, so the doors take half of "WE’RE" and half of "UPGRADING." each.
+ */
+function Headline() {
+  return (
+    <p className={cn("w-full", HEADLINE_TYPE)}>
+      {/* The visible line is built out of boxes rather than one run of text,
+          so it is read once, here, as the phrase it is. */}
+      <span className="sr-only" data-road-ignore>
+        {HEADLINE.lead.join(HEADLINE.apostrophe)} {HEADLINE.accent}.
+      </span>
+
+      <span aria-hidden="true">
+        {/* Centring the whole word would put the seam wherever its middle
+            happens to fall — on the E, because the W is so much wider than
+            the R. Giving the apostrophe a column of its own between two equal
+            ones centres THE APOSTROPHE instead, so that is what the doors
+            split through. */}
+        <span className="grid w-full grid-cols-[1fr_auto_1fr] items-baseline">
+          <span className="text-right">{HEADLINE.lead[0]}</span>
+          <span>{HEADLINE.apostrophe}</span>
+          <span className="text-left">{HEADLINE.lead[1]}</span>
+        </span>
+
+        <span className="block text-center text-accent">
+          {HEADLINE.accent}
+          <span className="text-on-background">.</span>
+        </span>
+      </span>
+    </p>
   );
 }
 
@@ -230,17 +268,8 @@ function DoorFace() {
 
         {/* Same seam, same trick: both words live in the DOM of both doors, so
             the left copy still reads as one phrase to a screen reader even
-            though each door only shows its own half. */}
-        <p className={cn("flex w-full items-baseline", HEADLINE_TYPE)}>
-          {/* Half a word space each side, in `em` so the gap tracks the type. */}
-          <span className="flex w-1/2 justify-end pr-[0.25em]">
-            {HEADLINE.lead}
-          </span>
-          <span className="flex w-1/2 justify-start pl-[0.25em] text-accent">
-            {HEADLINE.accent}
-            <span className="text-on-background">.</span>
-          </span>
-        </p>
+            though each door only shows half of every letter-run. */}
+        <Headline />
       </div>
 
       <div
